@@ -13,3 +13,6 @@ media/
 
 #file bien moi truong
 .env
+
+#migration
+migrations/
