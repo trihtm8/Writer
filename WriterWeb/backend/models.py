@@ -106,19 +106,23 @@ class ReadLog(models.Model):
     reader = models.ForeignKey(ReaderProfile, on_delete=models.CASCADE)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
+    #touch_times tăng lên mỗi khi reader ấn xem chương
     touch_times = models.IntegerField(null=False, default=0)
+    #Thẻ ghi nhớ để reader tự đặt (có hoặc không)
     memory_tag = models.CharField(max_length = 50, null = True)
 
 #Thể loại yêu thích
 class FavoriteGenre(models.Model):
     reader = models.ForeignKey(ReaderProfile, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    #Thứ tự hiển thị trong bảng ghim của reader
     pin_number = models.IntegerField(null = False, default = 1)
 
 
 #Các models lưu trữ đánh giá của reader cho tác phẩm
 #Đánh giá rating từ 1 đến 5 sao
 class Rating(models.Model):
+    #Trạng thái hiển thị thông báo đến tác giả của Chapter
     SAW_STATUS_CHOICES = [
         ('wait', 'Đang đợi xem thông báo'),
         ('saw', 'Đã xem thông báo'),
