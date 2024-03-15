@@ -12,6 +12,7 @@ def user_directory_path(instance, filename):
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_image = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
+    company = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 #Liên hệ, bạn bè
@@ -45,6 +46,7 @@ class Message(models.Model):
 #Profile khi làm tác giả
 class AuthorProfile(models.Model):
     account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    pen_name = models.CharField(max_length=100, null=True)
     exp = models.IntegerField(default=0)
 
 #Profile khi làm đọc giả
@@ -57,7 +59,7 @@ class ReaderProfile(models.Model):
 #Thể loại
 class Genre(models.Model):
     name=models.CharField(max_length=50)
-    description = models.TextField()
+    description = models.TextField(null=True)
 
 #Vũ trụ
 def universe_cover_path(instance, filename):
@@ -71,11 +73,20 @@ def local_map_path(instance, filename):
     return f'local_maps/{instance.universe.id}/{filename}'
 
 class Universe(models.Model):
+    master = models.ForeignKey(AuthorProfile, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     cover_image = models.ImageField(upload_to=universe_cover_path, null=True, blank=True)
     world_map = models.ImageField(upload_to=world_map_path, null=True, blank=True)
     genres = models.ManyToManyField(Genre)
     rules = models.TextField()
+    #free_add_chapter == True thì có thể thêm chương mới mà không cần master duyệt
+    free_add_chapter = models.BooleanField(default=True)
+    PUBLICMENT = [
+        ('public' , 'Ai cũng có thể xem các chapter tại đây'),
+        ('subcribe', 'Chỉ người theo dõi nhìn thấy'),
+        ('private' , 'Chỉ những tác giả được phép xem')
+    ]
+    public = models.CharField(max_length=10, choices=PUBLICMENT, default='public')
 
 #Các bản đồ cục bộ của vữ trụ
 class LocalMap(models.Model):
@@ -85,10 +96,21 @@ class LocalMap(models.Model):
 
 #Chapter
 class Chapter(models.Model):
+    author=models.ForeignKey(AuthorProfile, on_delete=models.CASCADE)
     universe = models.ForeignKey(Universe, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     intro = models.TextField()
-    content = models.TextField()
+    ACCEPT = [
+        ('wait' , 'Đợi master xác nhận'),
+        ('accepted' , 'Đã được xác nhận')
+    ]
+    accept = models.CharField(max_length=10, choices=ACCEPT, default='wait')
+
+#Paragraph in chapter
+class Paragraph(models.Model):
+    ordinal_number = models.IntegerField(null=False, default=0)
+    chapter=models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    content=models.TextField(null=False)
 
 
 #Các models lưu trữ quá trình đọc của Account
@@ -160,3 +182,10 @@ class Donation(models.Model):
     cost = models.IntegerField(null=False, default=0)
     complain = models.TextField(null = True)
     saw = models.CharField(max_length=10, choices=SAW_STATUS_CHOICES, default='wait')
+
+#Shared post
+class SharedPost(models.Model):
+    chapter = models.ForeignKey(Chapter, on_delete=models.SET_DEFAULT, default="DELETED")
+    reader = models.ForeignKey(ReaderProfile, on_delete=models.CASCADE)
+    content = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now_add = True)
