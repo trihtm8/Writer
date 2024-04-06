@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="Logo.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/b265370c1b.js" crossorigin="anonymous"></script>
+    <style>
+        .post {
+            margin-top: 10px;
+        }
+    </style>
+    <style>
+        .post-main {
+          position: relative;
+        }
+    
+        .options-button {
+          position: absolute;
+          font-size: 30px;
+          top: 5px;
+          right: 5px;
+          padding: 5px;
+          background-color: #ffffff;
+          color: #000000;
+          border: none;
+          cursor: pointer;
+        }
+    
+        .options-menu {
+          position: absolute;
+          top: 50px;
+          right: 5px;
+          display: none;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .options-menu a {
+          display: block;
+          padding: 10px;
+          text-decoration: none;
+          color: #333;
+        }
+    
+        .options-menu a:hover {
+          background-color: #f5f5f5;
+        }
+    </style>
+    <script>
+        document.addEventListener('click', function(event) {
+            var optionsMenu = document.querySelectorAll('.options-menu');
+            
+            optionsMenu.forEach(function(element){
+                elementButton = element.previousElementSibling;
+                if(event.target != element && event.target.parentNode != element && event.target != elementButton && event.target.parentNode != elementButton){
+                    element.style.display = 'none';
+                }
+            });
+        });
+
+        function toggleOptions(menuID) {
+          var optionsMenu = document.getElementById(menuID);
+          optionsMenu.style.display = (optionsMenu.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+    <style>
+        #universe-top-intro {
+            border: solid 2px #000000;
+            background-image: url(Logo.png);      
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
+            position: relative;
+        }
+        #local-map {
+            border: solid 2px #000000;
+            height: 120px;
+            width: 180px;
+            position: absolute;
+            margin: 5px;
+        }
+        #cover-img {
+            position: absolute;
+            border: solid 2px #000000;
+            bottom: 5px;
+            left: 5px;
+            height: 160px;
+            width: 110px;
+        }
+        #name-box {
+            position: absolute;
+            border: solid 2px #000000;
+            border-radius: 5px;
+            bottom: 10px;
+            right: 5px;
+            background-color: white;
+            width: 80%;
+        }
+        .circle-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: solid 2px #000000;
+            text-align: center;
+        }
+        #name-box > * {
+            display: inline-block;
+        }
+        #universe-gengre-tags-blog {
+            height: 40px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        #universe-gengre-tags-blog > button {
+            margin: 4px;
+            border-radius: 10px;
+        }
+        #universe-authors-blog {
+            height: 60px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        .author-tag {
+            height: 50px;
+            width: fit-content;
+            border: solid 2px #000000;
+            margin: 4px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: 2px solid #2980b9;
+        }
+        .level-1 { background-color: #e74c3c; border-color: #c0392b; }
+        .level-2 { background-color: #2ecc71; border-color: #27ae60; }
+        .level-3 { background-color: #f39c12; border-color: #d35400; }
+        #universe-followers-blog {
+            height: 55px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+            position: relative;
+        }
+    </style>
+    <style>
+        #personal-intro {
+            border: solid 2px #000000;
+            background-image: url(Logo.png);      
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
+            position: relative; 
+        }
+        #avartar {
+            border: solid 2px #000000;
+            position: absolute;
+            height: 180px;
+            width: 180px;
+            border-radius: 50%;
+            left: 5px;
+            bottom: 5px;
+        }
+        #personal-name-blog {
+            border: solid 2px #000000;
+            width: 70%;
+            border-radius: 10px;
+            position: absolute;
+            right: 5px;
+            bottom: 15px;
+            background-color: #ffffff;
+        }
+        #personal-name-blog > * {
+            display: inline-block;
+        }
+        .reader-level {
+            border: solid 2px #000000;
+            border-radius: 10px;
+            margin-right: 5px;
+        }
+        .author-level {
+            border: solid 2px #000000;
+            border-radius: 10px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <style>
+            nav ul li a i{
+                scale: 150%;
+            }
+            nav ul li a{
+                transition: 2s;
+            }
+            nav ul li a:hover {
+                scale: 120%;
+            }
+        </style>
+        <div class="container-fluid" style="border: solid 2px; border-color: chocolate; ">
+            <div class="row">
+                <div class="col-2">
+                    <a href="#"><img src="Logo.png" alt="Logo" class="rounded" style="height: 50px;"></a>
+                </div>
+                <div class="col-8">
+                    <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+                        <ul class="navbar-nav">
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-house"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-sun"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-user"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-2">
+                    <div class="float-end">
+                        <img src="Logo.png" alt="Avartar" class="rounded-circle" style="height: 50px; width: 50px; margin-right: 50px;">
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bell" style="scale: 150%;"></i>
+                        </button>
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bars" style="scale: 150%;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main style="height: 675px;">
+        <div class="container-fluid" style="height: 100%;">
+            <div class="row" style="height: 100%;">
+                <div class="col-2" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    
+                </div>
+                <div class="col-7" style="border: solid 2px; border-color: chocolate; height: 100%; overflow-y: auto;">
+                    <div id="personal-intro">
+                        <img src="Logo.png" alt="Ảnh đại diện" id="avartar">
+                        <div id="personal-name-blog">
+                            <h3>Name is here</h3>
+                            <div class="reader-level float-end">
+                                <i class="fa-solid fa-eye" style="color: #000000;"></i>
+                                <div class="level-badge level-3">lv.1</div>
+                            </div>
+                            <div class="author-level float-end">
+                                <i class="fa-solid fa-pen-nib" style="color: #000000;"></i>
+                                <div class="level-badge level-1">lv.2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post" style="border: solid 2px; border-color: black; height: fit-content;">
+                        <div class="post-main" style="height: fit-content; margin: 2px;">
+                            <button class="options-button" onclick="toggleOptions('menu1')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="options-menu" id="menu1">
+                                <a href="#">Universe</a>
+                                <a href="#">Author</a>
+                                <a href="#">Report</a>
+                            </div>
+                            <div class="cover-img" style="border: solid 2px; border-color: black; height: fit-content;">
+                                <img src="Logo.png" alt="Ảnh bìa chương" style="width: 100%; height: 200px;">
+                            </div>
+                            <div class="chapter-intro" style="border: solid 2px; border-color: black; height: max-content;">
+                                <p style="margin: 2px; font-size: larger;">
+                                    Akfnjbh jfijiuah uHAuf  ihiHFuihj ihr jij ijh JIH riuh iuH Rh IUH IUh h.
+                                    jshfkjaghkjaghiughiugakdjh lkhsadfjh uashd iuh iushd iuh iuhsfk ukjhsdfk jhas uhui fakj.
+                                    ajsgchjsg huasgc uhagchh hscokhasjchakchkajc kjasckjhckas.
+                                    skchja snnckhasuhcasncascos,csoacakl coasncksjcapslc,sk;s.
+                                </p>
+                                <div style="text-align: end; margin: 2px;">
+                                    <button style="border-radius: 5px;">Xem chương</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-interaction" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 80px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> 5.0</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> 1.0 N</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-solid fa-circle-dollar-to-slot" style="color: black; font-size: 30px;"></i></button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> 500</button>
+                        </div>
+                    </div>
+                    <div class="post" style="border: solid 2px; border-color: black; height: fit-content;">
+                        <div class="post-main" style="height: fit-content; margin: 2px;">
+                            <button class="options-button" onclick="toggleOptions('menu2')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="options-menu" id="menu2">
+                                <a href="#">Universe</a>
+                                <a href="#">Author</a>
+                                <a href="#">Report</a>
+                            </div>
+                            <div class="cover-img" style="border: solid 2px; border-color: black; height: fit-content;">
+                                <img src="Logo.png" alt="Ảnh bìa chương" style="width: 100%; height: 200px;">
+                            </div>
+                            <div class="chapter-intro" style="border: solid 2px; border-color: black; height: max-content;">
+                                <p style="margin: 2px; font-size: larger;">
+                                    Akfnjbh jfijiuah uHAuf  ihiHFuihj ihr jij ijh JIH riuh iuH Rh IUH IUh h.
+                                    jshfkjaghkjaghiughiugakdjh lkhsadfjh uashd iuh iushd iuh iuhsfk ukjhsdfk jhas uhui fakj.
+                                    ajsgchjsg huasgc uhagchh hscokhasjchakchkajc kjasckjhckas.
+                                    skchja snnckhasuhcasncascos,csoacakl coasncksjcapslc,sk;s.
+                                </p>
+                                <div style="text-align: end; margin: 2px;">
+                                    <button style="border-radius: 5px;">Xem chương</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-interaction" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 80px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> 5.0</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> 1.0 N</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-solid fa-circle-dollar-to-slot" style="color: black; font-size: 30px;"></i></button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> 500</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

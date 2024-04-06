@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block  customstylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static "css/login_register.css" %}">
+{% endblock customstylesheet %}
+
+{% block customscript %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static "js/login_register.js" %}"></script>
+{% endblock customscript %}
+
+{% block header %}
+<header class="container-fluid">
+    <div class="row">
+        <div class="col-2" id="header-img">
+            <img src={% static "img/Logo.png" %}>
+        </div>
+        <div id="WellcomeBanner" class="carousel slide col-8" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <h1><i class="fa-solid fa-face-smile-wink"></i> Wellcome to Writer Universe <i class="fa-solid fa-face-laugh-squint"></i></h1>
+                </div>
+                <div class="carousel-item">
+                    <h1>Login to create your world <i class="fa-solid fa-feather-pointed"></i></h1>
+                </div>
+                <div class="carousel-item">
+                    <h1>Don't have an account? Register free <i class="fa-solid fa-user-pen"></i></h1>
+                </div>
+                <div class="carousel-item">
+                    <h1>Connect with other author and read they story <i class="fa-solid fa-users"></i></h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <div id="guest-login-container" class="text-center">
+                <button><h1><i class="fa-solid fa-person-circle-question"></i><h1></button>
+                <h3>Guest login</h3>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock header %}
+{% block main %}
+<div id="loading-spinner" class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+<div class="text-center" id="forms-container">
+    {% include "../forms/ui/loginForm.html" %}
+    {% include "../forms/ui/registerForm.html" %}
+</div>
+{% endblock main %}
+{% block footer %}
+<footer>
+    <p>Make with django: <a href='https://www.djangoproject.com/'>www.djangoproject.com</a> --- Code by Phạm Hửu Trí: <a href='mailto: phamhuutri.moonlight@gmail.com'>phamhuutri.moonlight@gmail.com</a> --- See my codes at: <a href='https://www.github.com/trihtm8'>https://www.github.com/trihtm8</a></p>
+</footer>
+{% endblock footer %}

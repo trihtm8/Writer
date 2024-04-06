@@ -11,6 +11,7 @@ def user_directory_path(instance, filename):
 #Các tài khoản
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_name = models.TextField(null=False, default='Your account name')
     profile_image = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
     company = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)

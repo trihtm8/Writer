@@ -1,0 +1,9 @@
+<form method="post" id="register-form" class="fade">
+    <span><h3>Register</h3></span>
+    {% csrf_token %}
+    {{ registerForm.as_p }}
+    <button type="submit" id="register-submit">Create Account</button>
+</form>
+<div class="text-center">
+    <button id="openRegisterformButton"><i class="fa-solid fa-user-plus"></i> Register</button>
+</div>

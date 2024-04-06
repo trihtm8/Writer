@@ -7,7 +7,8 @@ django.setup()
 import random
 from faker import Faker
 from django.contrib.auth.models import User
-from backend.models import Account, Contact, Message, AuthorProfile, ReaderProfile, Genre, Universe, LocalMap, Chapter, Paragraph, PinUniverse, ReadLog, FavoriteGenre, Rating, Comment, Donation
+from backend.models import Account, Contact, Message, AuthorProfile, ReaderProfile, Genre, Universe, LocalMap, Chapter, Paragraph, PinUniverse, ReadLog, FavoriteGenre, Rating, Comment, Donation, SharedPost
+from django.db.models import Q as Query
 
 fake = Faker()
 
@@ -27,11 +28,14 @@ def create_fake_user():
 #v
 def create_fake_account(user):
     profile_image = fake.image_url()
+    profile_name = str(user.username).upper()
     created_at = fake.date_time_this_decade()
     company = fake.company()
-    return Account.objects.create(user=user, profile_image=profile_image, created_at=created_at, company = company)
+    return Account.objects.create(user=user, profile_image=profile_image, created_at=created_at, company = company, profile_name=profile_name)
 #v
 def create_fake_contact(user_from, user_to):
+    if Contact.objects.filter(user_from=user_from, user_to=user_to).exists() or Contact.objects.filter(user_from=user_to, user_to=user_from).exists():
+        return False
     created_at = fake.date_time_this_month()
     confirm = random.choice(['waiting', 'accepted', 'rejected'])
     return Contact.objects.create(user_from=user_from, user_to=user_to, created_at=created_at, confirm=confirm)
@@ -117,6 +121,9 @@ def create_fake_favorite_genre(reader, genre):
     pin_number = random.randint(1,10)
     return FavoriteGenre.objects.create(genre=genre, reader=reader, pin_number=pin_number)
 
+def create_fake_shared_post(reader, chapter):
+    content = fake.text()
+    return SharedPost.objects.create(reader=reader, chapter=chapter, content=content)
 # Tạo dữ liệu ngẫu nhiên
 for _ in range(10):
     create_fake_genre()
@@ -138,11 +145,13 @@ all_account = Account.objects.all()
 all_reader = ReaderProfile.objects.all()
 all_chapter = Chapter.objects.all()
 
-account_pairs = [(all_account[i], all_account[i + 1]) for i in range(0, len(all_account), 2)]
-for user_from, user_to in account_pairs:
-    contact = create_fake_contact(user_from, user_to)
-    for _ in range(random.randint(0,10)):
-        create_fake_message(contact)
+for user in all_account:
+    other_users = all_account.exclude(Query(id=user.id))
+    for user_to in random.sample(list(other_users), random.randint(0,6)):
+        contact = create_fake_contact(user, user_to)
+        if contact != False:
+            for _ in range(random.randint(0,10)):
+                create_fake_message(contact)
 
 for universe in all_universes:
     for i in range(random.randint(1,3)):
@@ -161,6 +170,7 @@ for reader in all_reader:
         create_fake_comment(reader, chapter)
         create_fake_rating(reader, chapter)
         create_fake_donation(reader, chapter)
+        create_fake_shared_post(reader, chapter)
 
 for universe in all_universes:
     universe.save()

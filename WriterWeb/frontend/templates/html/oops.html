@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block header %}
+<header>
+    <h1>Oops! Something went wrong when rendering the site!</h1>
+    <h1>We will go home in <span id='countdown'>5</span> seconds.</h1>
+    <script>
+        window.onload = setInterval(function () {
+            var countdownElement = document.getElementById('countdown');
+            var count = parseInt(countdownElement.textContent);
+            
+            if (count > 1) {
+                count--;
+                countdownElement.textContent = count;
+            } else {
+                clearInterval(window.onload);
+                // Chuyển hướng về trang chủ
+                window.location.href = "{% url 'home' %}";
+            }
+        }, 1000);
+    </script>
+</header>
+{% endblock header %}

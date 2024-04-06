@@ -1,0 +1,10 @@
+<form method="post" id="login-form" class="fade">
+    <span><h3>Login</h3></span>
+    {% csrf_token %}
+    {{ loginForm.as_p }}
+    <span id="login-form-status"></span>
+    <button type="submit" id="login-submit">Login</button>
+</form>
+<div class="text-center">
+    <button id="openLoginformButton"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+</div>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block  customstylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static "css/index.css" %}">
+{% endblock customstylesheet %}
+
+{% block customscript%}
+<script src="{% static "js/index.js" %}"></script>
+{% endblock customscript%}
+
+{% block header %}
+<header>
+    <h1>Index page</h1>
+    {% include '../forms/subforms/logoutForm.html'%}
+</header>
+{% endblock header %}

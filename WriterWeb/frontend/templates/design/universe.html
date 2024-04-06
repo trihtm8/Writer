@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="Logo.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/b265370c1b.js" crossorigin="anonymous"></script>
+    <style>
+        .post {
+            margin-top: 10px;
+        }
+    </style>
+    <style>
+        .post-main {
+          position: relative;
+        }
+    
+        .options-button {
+          position: absolute;
+          font-size: 30px;
+          top: 5px;
+          right: 5px;
+          padding: 5px;
+          background-color: #ffffff;
+          color: #000000;
+          border: none;
+          cursor: pointer;
+        }
+    
+        .options-menu {
+          position: absolute;
+          top: 50px;
+          right: 5px;
+          display: none;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .options-menu a {
+          display: block;
+          padding: 10px;
+          text-decoration: none;
+          color: #333;
+        }
+    
+        .options-menu a:hover {
+          background-color: #f5f5f5;
+        }
+    </style>
+    <script>
+        document.addEventListener('click', function(event) {
+            var optionsMenu = document.querySelectorAll('.options-menu');
+            
+            optionsMenu.forEach(function(element){
+                elementButton = element.previousElementSibling;
+                if(event.target != element && event.target.parentNode != element && event.target != elementButton && event.target.parentNode != elementButton){
+                    element.style.display = 'none';
+                }
+            });
+        });
+
+        function toggleOptions(menuID) {
+          var optionsMenu = document.getElementById(menuID);
+          optionsMenu.style.display = (optionsMenu.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+    <style>
+        #universe-top-intro {
+            border: solid 2px #000000;
+            background-image: url(Logo.png);      
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
+            position: relative;
+        }
+        #local-map {
+            border: solid 2px #000000;
+            height: 120px;
+            width: 180px;
+            position: absolute;
+            margin: 5px;
+        }
+        #cover-img {
+            position: absolute;
+            border: solid 2px #000000;
+            bottom: 5px;
+            left: 5px;
+            height: 160px;
+            width: 110px;
+        }
+        #name-box {
+            position: absolute;
+            border: solid 2px #000000;
+            border-radius: 5px;
+            bottom: 10px;
+            right: 5px;
+            background-color: white;
+            width: 80%;
+        }
+        .circle-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: solid 2px #000000;
+            text-align: center;
+        }
+        #name-box > * {
+            display: inline-block;
+        }
+        #universe-gengre-tags-blog {
+            height: 40px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        #universe-gengre-tags-blog > button {
+            margin: 4px;
+            border-radius: 10px;
+        }
+        #universe-authors-blog {
+            height: 60px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        .author-tag {
+            height: 50px;
+            width: fit-content;
+            border: solid 2px #000000;
+            margin: 4px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: 2px solid #2980b9;
+        }
+        .level-1 { background-color: #e74c3c; border-color: #c0392b; }
+        .level-2 { background-color: #2ecc71; border-color: #27ae60; }
+        .level-3 { background-color: #f39c12; border-color: #d35400; }
+        #universe-followers-blog {
+            height: 55px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <style>
+            nav ul li a i{
+                scale: 150%;
+            }
+            nav ul li a{
+                transition: 2s;
+            }
+            nav ul li a:hover {
+                scale: 120%;
+            }
+        </style>
+        <div class="container-fluid" style="border: solid 2px; border-color: chocolate; ">
+            <div class="row">
+                <div class="col-2">
+                    <a href="#"><img src="Logo.png" alt="Logo" class="rounded" style="height: 50px;"></a>
+                </div>
+                <div class="col-8">
+                    <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+                        <ul class="navbar-nav">
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-house"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-sun"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-user"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-2">
+                    <div class="float-end">
+                        <img src="Logo.png" alt="Avartar" class="rounded-circle" style="height: 50px; width: 50px; margin-right: 50px;">
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bell" style="scale: 150%;"></i>
+                        </button>
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bars" style="scale: 150%;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main style="height: 675px;">
+        <div class="container-fluid" style="height: 100%;">
+            <div class="row" style="height: 100%;">
+                <div class="col-2" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    
+                </div>
+                <div class="col-7" style="border: solid 2px; border-color: chocolate; height: 100%; overflow-y: auto;">
+                    <div id="universe-top-intro">
+                        <img id="local-map" src="Logo.png" alt="Bản đồ cục bộ">
+                        <button class="options-button" onclick="toggleOptions('menuUniverse')">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="options-menu" id="menuUniverse">
+                            <a href="#">Chapters</a>
+                            <a href="#">Copyright Report</a>
+                            <a href="#">Rule_sets</a>
+                        </div>
+                        <img id="cover-img" src="Logo.png" alt="Bìa sách">
+                        <div id="name-box">
+                            <h2>The Universe</h2>
+                            <div class="circle-container" style="position: absolute; right: 100px; margin-top: 3px;">
+                                <i class="fa-solid fa-users" style="color: #000000; font-size: 25px; margin-top: 6px;"></i>
+                            </div>
+                            <div class="circle-container" style="position: absolute; right: 30px; margin-top: 3px;">
+                                <i class="fa-solid fa-globe" style="color: #000000; font-size: 25px; margin-top: 6px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="universe-gengre-tags-blog">
+                        <button><i class="fa-solid fa-tag"></i> Tag 1</button>
+                        <button><i class="fa-solid fa-tag"></i> Tag 2</button>
+                        <button><i class="fa-solid fa-tag"></i> Tag 3</button>
+                        <button><i class="fa-solid fa-tag"></i> Tag 4</button>
+                    </div>
+                    <div id="universe-authors-blog">
+                        <div class="author-tag">
+                            <div class="circle-container" style="margin: 4px; display: inline-block;">
+                                <img src="Logo.png" alt="Ảnh đại diện 1" style="width: 100%; height: 100%; border-radius: 50%;">
+                            </div>
+                            <h3 style="display: inline-block; margin-right: 3px;"><i class="fa-solid fa-key"></i> Author 1 <span class="level-badge level-3">Lv.3</span> </h3>
+                        </div>
+                        <div class="author-tag">
+                            <div class="circle-container" style="margin: 4px; display: inline-block;">
+                                <img src="Logo.png" alt="Ảnh đại diện 2" style="width: 100%; height: 100%; border-radius: 50%;">
+                            </div>
+                            <h3 style="display: inline-block; margin-right: 3px;"><i class="fa-solid fa-wrench"></i> Author 2 <span class="level-badge level-2">Lv.2</span> </h3>
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện 3" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện 4" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện 5" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện 6" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <a href="#" style="font-size: 30px; color: #000000;">...</a>
+                    </div>
+                    <div id="universe-followers-blog">
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div class="circle-container" style="margin: 4px; display: inline-block;">
+                            <img src="Logo.png" alt="Ảnh đại diện n" style="width: 100%; height: 100%; border-radius: 50%;">
+                        </div>
+                        <div style="margin: 4px; display: inline-block;">
+                            <p style="font-size: larger;">1.0 N</p>
+                        </div>
+                        <button style="font-size: 25px; position: absolute; top: 5px; right: 5px;"><i class="fa-solid fa-plus" style="color: #000000;"></i>Theo dõi</button>
+                    </div>
+                    <div class="post" style="border: solid 2px; border-color: black; height: fit-content;">
+                        <div class="post-main" style="height: fit-content; margin: 2px;">
+                            <button class="options-button" onclick="toggleOptions('menu1')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="options-menu" id="menu1">
+                                <a href="#">Universe</a>
+                                <a href="#">Author</a>
+                                <a href="#">Report</a>
+                            </div>
+                            <div class="cover-img" style="border: solid 2px; border-color: black; height: fit-content;">
+                                <img src="Logo.png" alt="Ảnh bìa chương" style="width: 100%; height: 200px;">
+                            </div>
+                            <div class="chapter-intro" style="border: solid 2px; border-color: black; height: max-content;">
+                                <p style="margin: 2px; font-size: larger;">
+                                    Akfnjbh jfijiuah uHAuf  ihiHFuihj ihr jij ijh JIH riuh iuH Rh IUH IUh h.
+                                    jshfkjaghkjaghiughiugakdjh lkhsadfjh uashd iuh iushd iuh iuhsfk ukjhsdfk jhas uhui fakj.
+                                    ajsgchjsg huasgc uhagchh hscokhasjchakchkajc kjasckjhckas.
+                                    skchja snnckhasuhcasncascos,csoacakl coasncksjcapslc,sk;s.
+                                </p>
+                                <div style="text-align: end; margin: 2px;">
+                                    <button style="border-radius: 5px;">Xem chương</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-interaction" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 80px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> 5.0</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> 1.0 N</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-solid fa-circle-dollar-to-slot" style="color: black; font-size: 30px;"></i></button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> 500</button>
+                        </div>
+                    </div>
+                    <div class="post" style="border: solid 2px; border-color: black; height: fit-content;">
+                        <div class="post-main" style="height: fit-content; margin: 2px;">
+                            <button class="options-button" onclick="toggleOptions('menu2')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="options-menu" id="menu2">
+                                <a href="#">Universe</a>
+                                <a href="#">Author</a>
+                                <a href="#">Report</a>
+                            </div>
+                            <div class="cover-img" style="border: solid 2px; border-color: black; height: fit-content;">
+                                <img src="Logo.png" alt="Ảnh bìa chương" style="width: 100%; height: 200px;">
+                            </div>
+                            <div class="chapter-intro" style="border: solid 2px; border-color: black; height: max-content;">
+                                <p style="margin: 2px; font-size: larger;">
+                                    Akfnjbh jfijiuah uHAuf  ihiHFuihj ihr jij ijh JIH riuh iuH Rh IUH IUh h.
+                                    jshfkjaghkjaghiughiugakdjh lkhsadfjh uashd iuh iushd iuh iuhsfk ukjhsdfk jhas uhui fakj.
+                                    ajsgchjsg huasgc uhagchh hscokhasjchakchkajc kjasckjhckas.
+                                    skchja snnckhasuhcasncascos,csoacakl coasncksjcapslc,sk;s.
+                                </p>
+                                <div style="text-align: end; margin: 2px;">
+                                    <button style="border-radius: 5px;">Xem chương</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-interaction" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 80px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> 5.0</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> 1.0 N</button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px; margin-right: 80px;"><i class="fa-solid fa-circle-dollar-to-slot" style="color: black; font-size: 30px;"></i></button>
+                            <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> 500</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

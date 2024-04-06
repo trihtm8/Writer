@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="Logo.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/b265370c1b.js" crossorigin="anonymous"></script>
+    <style>
+        .post {
+            margin-top: 10px;
+        }
+    </style>
+    <style>
+        .post-main {
+          position: relative;
+        }
+    
+        .options-button {
+          position: absolute;
+          font-size: 30px;
+          top: 5px;
+          right: 5px;
+          padding: 5px;
+          background-color: #ffffff;
+          color: #000000;
+          border: none;
+          cursor: pointer;
+        }
+    
+        .options-menu {
+          position: absolute;
+          top: 50px;
+          right: 5px;
+          display: none;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .options-menu a {
+          display: block;
+          padding: 10px;
+          text-decoration: none;
+          color: #333;
+        }
+    
+        .options-menu a:hover {
+          background-color: #f5f5f5;
+        }
+    </style>
+    <script>
+        document.addEventListener('click', function(event) {
+            var optionsMenu = document.querySelectorAll('.options-menu');
+            
+            optionsMenu.forEach(function(element){
+                elementButton = element.previousElementSibling;
+                if(event.target != element && event.target.parentNode != element && event.target != elementButton && event.target.parentNode != elementButton){
+                    element.style.display = 'none';
+                }
+            });
+        });
+
+        function toggleOptions(menuID) {
+          var optionsMenu = document.getElementById(menuID);
+          optionsMenu.style.display = (optionsMenu.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+    <style>
+        #universe-top-intro {
+            border: solid 2px #000000;
+            background-image: url(Logo.png);      
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
+            position: relative;
+        }
+        #local-map {
+            border: solid 2px #000000;
+            height: 120px;
+            width: 180px;
+            position: absolute;
+            margin: 5px;
+        }
+        #cover-img {
+            position: absolute;
+            border: solid 2px #000000;
+            bottom: 5px;
+            left: 5px;
+            height: 160px;
+            width: 110px;
+        }
+        #name-box {
+            position: absolute;
+            border: solid 2px #000000;
+            border-radius: 5px;
+            bottom: 10px;
+            right: 5px;
+            background-color: white;
+            width: 80%;
+        }
+        .circle-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: solid 2px #000000;
+            text-align: center;
+        }
+        #name-box > * {
+            display: inline-block;
+        }
+        #universe-gengre-tags-blog {
+            height: 40px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        #universe-gengre-tags-blog > button {
+            margin: 4px;
+            border-radius: 10px;
+        }
+        #universe-authors-blog {
+            height: 60px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+        }
+        .author-tag {
+            height: 50px;
+            width: fit-content;
+            border: solid 2px #000000;
+            margin: 4px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: 2px solid #2980b9;
+        }
+        .level-1 { background-color: #e74c3c; border-color: #c0392b; }
+        .level-2 { background-color: #2ecc71; border-color: #27ae60; }
+        .level-3 { background-color: #f39c12; border-color: #d35400; }
+        #universe-followers-blog {
+            height: 55px;
+            border: solid 2px #000000;
+            margin-top: 10px;
+            position: relative;
+        }
+    </style>
+    <style>
+        #view-chapter-intro {
+            border: #000000 solid 2px;
+        }
+    </style>
+    <style>
+        #view-chapter-intro {
+            height: 150px;
+            background-image: linear-gradient(to bottom right, #3498db, #e74c3c);
+            position: relative;
+        }
+        #chapter-name-blog {
+            background-color: #ffffff;
+            border: #000000 solid 2px;
+            position: relative;
+            top: 5px;
+            left: 5px;
+            width: fit-content;
+            max-width: 70%;
+            overflow-x: hidden;
+        }
+        #chapter-controller {
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        #chapter-controller > * {
+            position: absolute;
+            display: block;
+        }
+        #previous-chapter-btn {
+            left: 0px;
+        }
+        #next-chapter-btn {
+            right: 0px;
+        }
+        #chapter-list {
+            left: 30%;
+            width: 40%;
+        }
+        #chapter-list > #chapter-dropdown {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #chapter-dropdown {
+            max-height: 215px;
+            overflow-y: auto ;
+        }
+        #chapter-dropdown > .now-chapter{
+            border: #27ae60 dashed;
+        }
+        #now-chapter-show > button{
+            width: 100%;
+        }
+        .chapter-dropdown-item {
+            width: 100%;
+        }
+        .chapter-dropdown-item > button {
+            text-decoration: none;
+            width: 100%;
+            border: 0px;
+        }
+        .chapter-dropdown-item > button:hover {
+            background-color: #7c7c7c;
+        }
+        #chapter-cover-img {
+            border: #000000 solid 2px;
+            height: 140px;
+            width: 250px;
+            right: 4px;
+            top: 4px;
+            position: absolute;
+        }
+    </style>
+    <script>
+        document.addEventListener("click", function(event){
+            var chapterDropdown = document.getElementById("chapter-dropdown");
+            var nowChapterButton = document.querySelector("#now-chapter-show button");
+
+            if(event.target != chapterDropdown && event.target.parentNode != chapterDropdown && event.target != nowChapterButton && event.target.parentNode != nowChapterButton){
+                chapterDropdown.style.display = "none";
+            }
+        });
+
+        function toggleDropdownChapter(){
+            var chapterDropdown = document.getElementById("chapter-dropdown");
+            chapterDropdown.style.display = (chapterDropdown.style.display === "block") ? "none" : "block";
+        }
+    </script>
+    <style>
+        #comments-list {
+            border: #000000 solid 2px;
+            height: 570px;
+            overflow-y: auto;
+        }
+        #your-comment{
+            position: relative;
+        }
+        #your-comment > input {
+            position: absolute;
+            right: 30px;
+            height: 40px;
+            width: 80%;
+            border-radius: 20px;
+        }
+        #your-comment > .circle-container {
+            position: absolute;
+        }
+        #your-comment > button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+        .circle-container > img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .comments-blog {
+            position: relative;
+        }
+        .comment-content {
+            background-color: #cfcfcf;
+            height: fit-content;
+            border-radius: 10px;
+            position: absolute;
+            width: 87%;
+            right: 2px;
+            top: 2px;
+            max-height: 90px;
+            overflow-y: auto;
+        }
+        .comment-content > p {
+            margin: 5px;
+        }
+        .comments-blog > .circle-container {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+        }
+    </style>
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            var blogs = document.querySelectorAll(".comments-blog");
+
+            for (var i = 1; i < blogs.length; i++) {
+                var marginTopValue = parseInt(getComputedStyle(blogs[i - 1]).marginTop, 10) + 100;
+                blogs[i].style.marginTop = marginTopValue + "px";
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <style>
+            nav ul li a i{
+                scale: 150%;
+            }
+            nav ul li a{
+                transition: 2s;
+            }
+            nav ul li a:hover {
+                scale: 120%;
+            }
+        </style>
+        <div class="container-fluid" style="border: solid 2px; border-color: chocolate; ">
+            <div class="row">
+                <div class="col-2">
+                    <a href="#"><img src="Logo.png" alt="Logo" class="rounded" style="height: 50px;"></a>
+                </div>
+                <div class="col-8">
+                    <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+                        <ul class="navbar-nav">
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-house"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-sun"></i></a>
+                            </li>
+                            <li class="nav-item" style="margin-left: 90px; margin-right: 90px;">
+                                <a class="nav-link" href="#"><i class="fa-solid fa-user"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-2">
+                    <div class="float-end">
+                        <img src="Logo.png" alt="Avartar" class="rounded-circle" style="height: 50px; width: 50px; margin-right: 50px;">
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bell" style="scale: 150%;"></i>
+                        </button>
+                        <button style="height: 50px; width: 50px; margin-top: 2px;">
+                            <i class="fa-solid fa-bars" style="scale: 150%;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main style="height: 675px;">
+        <div class="container-fluid" style="height: 100%;">
+            <div class="row" style="height: 100%;">
+                <div class="col-2" style="border: solid 2px; border-color: chocolate; height: 100%;">
+
+                </div>
+                <div class="col-7" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    <div id="chapter-controller">
+                        <button id="previous-chapter-btn"><i class="fa-solid fa-arrow-left"></i> Trước</button>
+                        <button id="next-chapter-btn">Sau <i class="fa-solid fa-arrow-right"></i></button>
+                        <div id="chapter-list">
+                            <div id="now-chapter-show"><button onclick="toggleDropdownChapter()">Chapter 1</button></div>
+                            <div id="chapter-dropdown">
+                                <div class="chapter-dropdown-item now-chapter"><button>Chapter 1</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 2</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                                <div class="chapter-dropdown-item"><button>Chapter 3</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="view-main" style="overflow-y: auto; height: 83vh;">
+                        <div id="view-chapter-intro">
+                            <div id="chapter-name-blog">
+                                <h2>Tên Chapter</h2>
+                                <h3>By. Tác giả X <div class="level-badge level-1">Lv.1</div></h3>
+                            </div>
+                            <div></div>
+                            <div id="chapter-cover-img"><img src="Logo.png" alt="Ảnh bìa chương" style="width: 100%; height: 100%;"></div>
+                        </div>
+                        <div class="view-content" >
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                            <p>nfjaj h h h j jkaj nj kn kn kn kn k jn jnjn jjnj n</p>
+                            <p>jk jjhh jhjh hb  bhb hbh bh bh bh bh bbhbh bhb hb h b hb j huhh jb h h y h jh ị hijh jj j h jkhj hjk j </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3" style="border: solid 2px; border-color: chocolate; height: 100%;">
+                    <div class="post-interaction" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+                        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 10px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> 5.0</button>
+                        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px; margin-right: 20px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> 1.0 N</button>
+                        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> 500</button>
+                    </div>
+                    <div id="comments-list">
+                        <div class="comments-blog" >
+                            <div class="circle-container"><img src="Logo.png" alt="Anhr đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User X</strong> đã bình luận</p>
+                                <p>jfjjfsdjf iisdjfiojij j j ji uhubuhf hnbhbhn fnjfnj uvhush ug uh shu sguh uhus uhuh sguhuh uhgs
+                                guh jnsgj jbjgbj jng j j gj hb sg
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User TY</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User A</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User B</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User C</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User S</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comments-blog">
+                            <div class="circle-container"><img src="Logo.png" alt="Ảnh đại diện"></div>
+                            <div class="comment-content">
+                                <p><strong>User F</strong> đã bình luận</p>
+                                <p>jfjjfsdjf
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 5px;" id="your-comment">
+                        <div class="circle-container"><img src="Logo.png" alt="Anhr đại diện"></div>
+                        <input type="text">
+                        <button type="submit"><i class="fa-regular fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
