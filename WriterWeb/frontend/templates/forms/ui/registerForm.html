@@ -2,6 +2,7 @@
     <span><h3>Register</h3></span>
     {% csrf_token %}
     {{ registerForm.as_p }}
+    <span id='register-status'></span>
     <button type="submit" id="register-submit">Create Account</button>
 </form>
 <div class="text-center">

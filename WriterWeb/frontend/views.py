@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from .forms import *
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse
@@ -24,7 +25,11 @@ def home(request):
     registerForm = RegisterForm()
     return render(request, 'html/login_register.html', {"loginForm":loginForm, "registerForm": registerForm})
 
-
+#route /registerdone
+def registerdone(request):
+    loginForm = LoginForm()
+    registerForm = RegisterForm()
+    return render(request, 'html/login_register.html', {'alert':'Your account has been created, try login!', "loginForm":loginForm, "registerForm": registerForm})
 ###################################################################################################################################
 #checking routes
 #on "check/"
@@ -59,6 +64,32 @@ def checkLogin(request):
                 return JsonResponse(Err.requiredVariable('valid username or password'))
     return JsonResponse(Err.unsuportedMethod())
 
+#route logout/
+def checkRegister(request):
+    if request.user.is_authenticated:
+        return JsonResponse(Err.requiredLogout())
+    if request.method == 'POST':
+        username = request.POST.get('username', None)
+        if username == None:
+            return JsonResponse(Err.requiredVariable('username'))
+        if User.objects.filter(username=username):
+            return JsonResponse(Err.requiredVariable('no_exists username'))
+        password = request.POST.get('password', None)
+        repass = request.POST.get('repass')
+        if password is None:
+            return JsonResponse(Err.requiredVariable('password'))
+        if len(password) < 6:
+            return JsonResponse(Err.requiredVariable('longer password'))
+        if repass != password:
+            return JsonResponse(Err.requiredVariable('matching re_password'))
+        moreInfoRegisterForm1 = MoreInfoRegisterForm1()
+        moreInfoRegisterForm2 = MoreInfoRegisterForm2()
+        html_forms = render(request, 'html/moreinforegister.html', {
+            'moreInfoRegisterForm1' : moreInfoRegisterForm1,
+            'moreInfoRegisterForm2' : moreInfoRegisterForm2
+        })
+        return html_forms
+    return JsonResponse(Err.unsuportedMethod())
 #################################################################################################################################
 #middleware views, help redirect to some views
 

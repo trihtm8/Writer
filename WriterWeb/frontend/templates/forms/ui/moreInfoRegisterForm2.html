@@ -1,0 +1,10 @@
+<form method="post" id="more-info-register-form2" class="fade hidden">
+    <span><h3>Custom account</h3></span>
+    {% csrf_token %}
+    {{ moreInfoRegisterForm2.as_p }}
+    <span id="more-info-register-form2-status"></span>
+    <h3>Im on dev for upload Avartar and Backgroud</h3>
+    <button type="button" id="prevform">Previos</button>
+    <button type="submit" id="submitAll">Register</button>
+    <button type="button" id="cancel">Cancel</button>
+</form>

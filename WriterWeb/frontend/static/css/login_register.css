@@ -1,7 +1,3 @@
-body {
-    background-color: rgb(255, 231, 223);
-}
-
 #WellcomeBanner > .carousel-inner > .carousel-item{
     text-align: center;
 }
@@ -15,20 +11,20 @@ button:hover{
     background-color: wheat;
 }
 
-#forms-container {
+.forms-container {
     display: flex;
     width: 100%;
     justify-content: center;
     height: 100%;
 }
 
-#form-container > div{
+.form-container > div{
     flex-grow: 2;
 }
 
 form {
     width: 100%;
-    max-width: 500px; /* Đặt chiều rộng của form */
+    max-width: 500px;
 }
 
 button{
@@ -58,8 +54,6 @@ main {
     height: 75vh;
 }
 
-footer{
-    background-color: slategray;
-    height: 38px;
+#more-info-register-forms {
     text-align: center;
 }

@@ -12,6 +12,7 @@
         <link rel="shortcut icon" href="{% static 'img/Logo.png' %}" type="image/x-icon">
         <!-- <script src="https://kit.fontawesome.com/b265370c1b.js" crossorigin="anonymous"></script> -->
         <link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/all.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}">
         {% block customscript %}
         {% endblock customscript %}
         {% block customstylesheet %}
@@ -35,6 +36,9 @@
             </div>
         </main>
         {% block footer %}
+        <footer>
+            <p>Make with django: <a href='https://www.djangoproject.com/'>www.djangoproject.com</a> --- Code by Phạm Hửu Trí: <a href='mailto: phamhuutri.moonlight@gmail.com'>phamhuutri.moonlight@gmail.com</a> --- See my codes at: <a href='https://www.github.com/trihtm8'>https://www.github.com/trihtm8</a></p>
+        </footer>
         {% endblock footer %}
     </body>
 </html>

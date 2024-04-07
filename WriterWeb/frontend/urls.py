@@ -6,4 +6,5 @@ urlpatterns = [
     path('check/', include('frontend.checkingurls')),
     path('oops/', oops, name='oops'),
     path('middleware/<int:middlekey>', middleware, name='middleware'),
+    path('registerdone', registerdone, name='registerdone'),
 ]

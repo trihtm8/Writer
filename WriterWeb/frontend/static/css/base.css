@@ -1,0 +1,17 @@
+body {
+    background-color: rgb(255, 231, 223);
+    height: 100dvh;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: slategray;
+    padding: 10px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}

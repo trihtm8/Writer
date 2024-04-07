@@ -48,13 +48,13 @@
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
-<div class="text-center" id="forms-container">
-    {% include "../forms/ui/loginForm.html" %}
-    {% include "../forms/ui/registerForm.html" %}
+<h3 class="d-flex justify-content-center">{{ alert }}</h3>
+<div id='first-forms' class='fade show'>
+    <div class="text-center forms-container">
+        {% include "../forms/ui/loginForm.html" %}
+        {% include "../forms/ui/registerForm.html" %}
+    </div>
+</div>
+<div id='more-info-register-forms' class='fade'>
 </div>
 {% endblock main %}
-{% block footer %}
-<footer>
-    <p>Make with django: <a href='https://www.djangoproject.com/'>www.djangoproject.com</a> --- Code by Phạm Hửu Trí: <a href='mailto: phamhuutri.moonlight@gmail.com'>phamhuutri.moonlight@gmail.com</a> --- See my codes at: <a href='https://www.github.com/trihtm8'>https://www.github.com/trihtm8</a></p>
-</footer>
-{% endblock footer %}

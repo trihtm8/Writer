@@ -142,56 +142,42 @@ def login(request, key):
 from faker import Faker
 fake = Faker()
 def register(request, key):
-    if request.user.is_authenticated: #v
-        return JsonResponse(Err.requiredLogout())
-    if request.method == 'POST': #v
+    if key != 888:
+        return redirect(reverse('oops'))
+    if request.user.is_authenticated:
+        return redirect(reverse('oops'))
+    if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         repass = request.POST.get('repass')
         first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        last_name = request.POST.get('last_name', None)
         email = request.POST.get('email')
         company = request.POST.get('company', None)
         if not username:
-            return JsonResponse(Err.requiredVariable('username'))
+            return redirect(reverse('oops'))
         if User.objects.filter(username=username).exists():
-            return JsonResponse(Err.requiredVariable('none_exists username'))
+            return redirect(reverse('oops'))
         if not first_name:
-            return JsonResponse(Err.requiredVariable('first_name'))
-        if not last_name:
-            return JsonResponse(Err.requiredVariable('last_name'))
+            return redirect(reverse('oops'))
         if not email:
-            return JsonResponse(Err.requiredVariable('email'))
+            return redirect(reverse('oops'))
         if len(password) < 6:
-            return JsonResponse(Err.requiredVariable('longer password'))
+            return redirect(reverse('oops'))
         if password != repass:
-            return JsonResponse(Err.requiredVariable('maching password'))
-        pen_name=request.POST.get('pen_name', str(first_name+last_name).upper())
+            return redirect(reverse('oops'))
+        pen_name=request.POST.get('pen_name', str(username).upper())
+        profile_name = request.POST.get('profile_name', str(first_name+last_name).upper())
         user = User.objects.create_user(username=username, password=password)
-        user.last_name=last_name
+        user.last_name='-' if not last_name else last_name
         user.first_name=first_name
         user.email=email
         user.save()
-        acc = Account.objects.create(user=user, company=company, profile_image = fake.image_url(), profile_name=str(first_name+last_name).upper())
-        author = AuthorProfile.objects.create(account=acc, pen_name=pen_name)
-        reader = ReaderProfile.objects.create(account=acc)
-        json_data = {
-            'message' : 'Register done',
-            'name' : acc.user.username,
-            'email' : acc.user.email,
-            'first_name' : acc.user.first_name,
-            'last_name' : acc.user.last_name,
-            'profile_name' : acc.profile_name,
-            'company' : acc.company,
-            'profile_img_url' : makeUrl(acc.profile_image.url),
-            'pen_name' : author.pen_name,
-            'author_exp' : author.exp,
-            'reader_exp' : reader.exp
-        }
-        resdata=Err.none()
-        resdata.update(json_data)
-        return JsonResponse(resdata)
-    return JsonResponse(Err.unsuportedMethod())
+        acc = Account.objects.create(user=user, company=company, profile_image = fake.image_url(), profile_name=profile_name)
+        AuthorProfile.objects.create(account=acc, pen_name=pen_name)
+        ReaderProfile.objects.create(account=acc)
+        return redirect(reverse('registerdone'))
+    return redirect(reverse('oops'))
 
 ##################################################################################################################################################
 #route backend/{key}/newuniverse: tạo vũ trụ mới v
