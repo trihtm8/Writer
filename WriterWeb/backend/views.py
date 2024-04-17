@@ -15,13 +15,19 @@ from django.contrib.auth.models import User
 from .models import *
 from django.apps import apps
 Key = apps.get_model('frontend', 'Key')
+Urls = apps.get_model('frontend', 'Urls')
 
 #exception
 from django.core.exceptions import ObjectDoesNotExist
 from .throw_error import Err as Throwerror
 #models.Q tạo truy vấn phức tạp
-from django.db.models import Q as Query
+from django.db.models import Q as Query, Avg, Count
 from django.db import models
+
+import random
+
+import pytz
+vn_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
 
 ##################################################################################################################################################
 #route backend/{key}/account/{account_id} v
@@ -36,16 +42,16 @@ def makeUrl(url):
 
 Err = Throwerror()
 
-@csrf_exempt
+#@csrf_exempt
 def account(request, key, account_id):
+    userKey = Key.objects.get(key=key)
     try:
         acc=Account.objects.get(id=account_id)
+        if userKey.user != acc.user:
+            return JsonResponse(Err.permissionDeny())
     except ObjectDoesNotExist:
         return JsonResponse(Err.objectDoesNotExists('Account'))
-    loging_in=False
-    if request.user.is_authenticated:
-        if request.user == acc.user:
-            loging_in = True
+    loging_in = True
     if request.method == 'GET': #v
         author = AuthorProfile.objects.get(account=acc)
         reader = ReaderProfile.objects.get(account=acc)
@@ -189,8 +195,12 @@ def choisePublic(string):
     if string == 'public' or string == 'subcribe' or string == 'private':
         return string
     return 'public'
-@csrf_exempt
+#@csrf_exempt
 def newuniverse(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     if not request.user.is_authenticated: #v
         return JsonResponse(Err.requiredLogin())
     if request.method == "POST": #v
@@ -231,7 +241,7 @@ def newuniverse(request, key):
 #GET: Lấy thông tin về vũ trụ
 #POST: Thay đổi title và rule
 #DELETE: Xóa vũ trụ
-@csrf_exempt
+#@csrf_exempt
 def universe(request, key, uni_id):
     try:
         uni=Universe.objects.get(id=uni_id)
@@ -310,8 +320,12 @@ def universe(request, key, uni_id):
 
 ##################################################################################################################################################
 #route backend/{key}/newgenre: tạo thể loại mới v
-@csrf_exempt
+#@csrf_exempt
 def newgenre(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
     if request.method == 'POST':
@@ -331,7 +345,7 @@ def newgenre(request, key):
 #route backend/{key}/universe/{uni_id}/genre/{genre_id} : thêm hoặc xóa tag thể loại cho vũ trụ v
 #PUT: thêm
 #DELETE: xóa
-@csrf_exempt
+#@csrf_exempt
 def universe_genre(request, key, uni_id, genre_id):
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
@@ -369,7 +383,7 @@ def universe_genre(request, key, uni_id, genre_id):
 ##################################################################################################################################################
 #route backend/{key}/universe/{uni_id}/localmaps: v
 #GET: lấy thông tin local_map của vũ trụ
-@csrf_exempt
+#@csrf_exempt
 def localmaps(request, key, uni_id):
     try:
         universe = Universe.objects.get(id=uni_id)
@@ -385,13 +399,13 @@ def localmaps(request, key, uni_id):
 
 ##################################################################################################################################################
 #route backend/{key}/universe/{uni_id}/newlocalmap: thêm localmap mới (đang phát triển)
-@csrf_exempt
+#@csrf_exempt
 def newlocalmap(request, key, uni_id):
     return JsonResponse({'message':'On developping'})
 
 ##################################################################################################################################################
 #route backend/{key}/universe/{uni_id}/localmap/{map_id}: thay đổi localname v
-@csrf_exempt
+#@csrf_exempt
 def universe_localmap(request, key, uni_id, map_id):
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
@@ -414,7 +428,7 @@ def universe_localmap(request, key, uni_id, map_id):
 
 ##################################################################################################################################################
 #route backend/{key}/universe/{uni_id}/newchapter v
-@csrf_exempt
+#@csrf_exempt
 def newchapter(request, key, uni_id):
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
@@ -449,7 +463,7 @@ def newchapter(request, key, uni_id):
 #GET: lấy thông tin chapter
 #POST: Cập nhật
 #DELETE: xóa chapter
-@csrf_exempt
+#@csrf_exempt
 def chapter(request, key, chapter_id):
     try:
         chapter=Chapter.objects.get(id=chapter_id)
@@ -522,7 +536,7 @@ def chapter(request, key, chapter_id):
 #GET: lấy thông tin paragraph
 #POST: Cập nhật
 #DELETE: xóa paragraph
-@csrf_exempt
+#@csrf_exempt
 def paragraph(request, key, paragraph_id):
     try:
         para = Paragraph.objects.get(id=paragraph_id)
@@ -548,7 +562,7 @@ def paragraph(request, key, paragraph_id):
 
 ##################################################################################################################################################
 #route backend/{key}/chapter/{chapter_id}/newparagraph: thêm paragraph mới v
-@csrf_exempt
+#@csrf_exempt
 def newparagraph(request, key, chapter_id):
     if request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
@@ -570,12 +584,13 @@ def newparagraph(request, key, chapter_id):
     return JsonResponse(Err.unsuportedMethod())
 
 ##################################################################################################################################################
-#route backend/{key}/see/posts : lấy post theo user.favorite_genre và user->contact->otheruser->post v
-@csrf_exempt
+#route backend/{key}/see/{account_id}/posts : lấy post theo user.favorite_genre và user->contact->otheruser->post v
+# #@csrf_exempt
 def posts(request, key):
-    if not request.user.is_authenticated:
-        return JsonResponse(Err.requiredLogin())
+    userhasKey = Key.objects.get(key=key).user
     account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     reader = ReaderProfile.objects.get(account=account)
     posts_by_tag = {}
     has_favorite_tag = True
@@ -596,11 +611,38 @@ def posts(request, key):
                     matching_chapters.append(chapter)
             if matching_chapters.__len__ != 0:
                 for chapter in matching_chapters:
-                    _posts = SharedPost.objects.filter(chapter=chapter)
+                    _posts = SharedPost.objects.filter(chapter=chapter).order_by('created_at')
                     if _posts.count() != 0:
                         for post in _posts:
+                            keyobj = Key.objects.get(key=key)
+                            if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id)):
+                                middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id)).middlekey
+                            else:
+                                while True:
+                                    newmiddlekey = random.randint(100000, 999999)
+                                    if not Urls.objects.filter(middlekey=newmiddlekey).exists():
+                                        break
+                                Urls.objects.create(key=keyobj, middlekey=newmiddlekey, url='touser@'+str(post.reader.account.user.id), type='u')
+                                middlekey = newmiddlekey
+                            chapter_ratings = Rating.objects.filter(chapter=post.chapter)
+                            average_rating = chapter_ratings.aggregate(Avg('start'))['start__avg']
+                            chapter_comment_count = Comment.objects.filter(chapter=post.chapter).count()
+                            shared_count = SharedPost.objects.filter(chapter=post.chapter).count()
                             updateJson = {
-                                post.id : {post.content : post.chapter.title}
+                                post.id : {
+                                    'content' : post.content, 
+                                    'chapter_title' : post.chapter.title,
+                                    'user_post' : post.reader.account.profile_name,
+                                    'avartar' : makeUrl(post.reader.account.profile_image.url),
+                                    'account_to_acount_middlekey' : middlekey,
+                                    'universe_img' : makeUrl(post.chapter.universe.cover_image.url),
+                                    'time_stamp' : post.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M"),
+                                    'chapter_intro' : post.chapter.intro,
+                                    'is_accepted' : True if post.chapter.accept == 'accepted' else False,
+                                    'chapter_star' : round(average_rating, 2) if average_rating is not None else '-',
+                                    'count_cmt' : chapter_comment_count,
+                                    'count_shared' : shared_count
+                                }
                             }
                             posts_by_tag.update(updateJson)
     posts_by_contact = {}
@@ -616,22 +658,51 @@ def posts(request, key):
                 other = contact.user_from
             other_account = other
             other_reader = ReaderProfile.objects.get(account=other_account)
-            _posts=SharedPost.objects.filter(reader=other_reader)
+            _posts=SharedPost.objects.filter(reader=other_reader).order_by('created_at')
             if _posts.count() != 0:
-                updateJson = {
-                    post.id : {post.content : post.chapter.title}
-                }
-                posts_by_contact.update(updateJson)
+                for post in _posts:
+                    keyobj = Key.objects.get(key=key)
+                    if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id)):
+                        middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id)).middlekey
+                    else:
+                        while True:
+                            newmiddlekey = random.randint(100000, 999999)
+                            if not Urls.objects.filter(middlekey=newmiddlekey).exists():
+                                break
+                        Urls.objects.create(key=keyobj, middlekey=newmiddlekey, url='touser@'+str(post.reader.account.user.id), type='u')
+                        middlekey = newmiddlekey
+                    chapter_ratings = Rating.objects.filter(chapter=post.chapter)
+                    average_rating = chapter_ratings.aggregate(Avg('start'))['start__avg']
+                    chapter_comment_count = Comment.objects.filter(chapter=post.chapter).count()
+                    shared_count = SharedPost.objects.filter(chapter=post.chapter).count()
+                    updateJson = {
+                        post.id : {
+                            'content' : post.content, 
+                            'chapter_title' : post.chapter.title,
+                            'user_post' : post.reader.account.profile_name,
+                            'avartar' : makeUrl(post.reader.account.profile_image.url),
+                            'account_to_acount_middlekey' : middlekey,
+                            'universe_img' : makeUrl(post.chapter.universe.cover_image.url),
+                            'time_stamp' : post.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M"),
+                            'chapter_intro' : post.chapter.intro,
+                            'chapter_star' : round(average_rating, 2) if average_rating is not None else '-',
+                            'count_cmt' : chapter_comment_count,
+                            'count_shared' : shared_count
+                        }
+                    }
+                    posts_by_tag.update(updateJson)
     if not (has_favorite_tag or has_contact):
         return JsonResponse(Err.ortherErr({'message':'Add a favorite tag to see some posts'}))
-    return JsonResponse (Err.none().update({'post_by_ftag' : posts_by_tag, 'post_by_contact' : posts_by_contact}))
+    jsonres = Err.none()
+    jsonres.update({'post_by_ftag' : posts_by_tag, 'post_by_contact' : posts_by_contact})
+    return JsonResponse (jsonres)
 
 ##################################################################################################################################################
 #route backend/{key}/post/{post_id} v
 #GET: lấy thông tin của bài đăng
 #POST: cập nhật bài đăng
 #DELETE: xóa bài đăng
-@csrf_exempt
+#@csrf_exempt
 def sharedPost(request, key, post_id):
     try:
         post = SharedPost.objects.get(id=post_id)
@@ -643,7 +714,7 @@ def sharedPost(request, key, post_id):
             'message':'Get post info',
             'postId': post.id,
             'content': post.content,
-            'chapter' : {'id' : post.chapter.id, 'intro' : post.chapter.intro} if post.chapter != "DELETED" else None,
+            'chapter' : {'id' : post.chapter.id, 'intro' : post.chapter.intro} if post.chapter != "DELETED" else 'DELETTED',
             'reader' : {'id' : reader.id, 'name' : reader.account.user.username},
             'created' : post.created_at
         }
@@ -680,11 +751,14 @@ def sharedPost(request, key, post_id):
 
 ##################################################################################################################################################
 #route backend/{key}/newpost: tạo post mới v
-@csrf_exempt
+#@csrf_exempt
 def newPost(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
-    account=Account.objects.get(user=request.user)
     reader = ReaderProfile.objects.get(account=account)
     if request.method == 'POST':
         content = request.POST.get('content', None)
@@ -703,16 +777,17 @@ def newPost(request, key):
     return JsonResponse(Err.unsuportedMethod)
 
 ##################################################################################################################################################
-#route backend/{key}/favoritetag: v
+#route backend/{key}/favoritetag/{account_id}: v
 #GET:lấy các favorite tag
 #PUT:chọn favorite tag mới
 #POST:thay đổi thứ tự favorite tag
 #DELETE:xóa tag
-@csrf_exempt
+#@csrf_exempt
 def favorite(request, key):
-    if not request.user.is_authenticated:
-        return JsonResponse(Err.requiredLogin())
+    userhasKey = Key.objects.get(key=key).user
     account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     reader = ReaderProfile.objects.get(account=account)
     if request.method == 'GET':
         tags = FavoriteGenre.objects.filter(reader=reader).order_by('pin_number')
@@ -769,21 +844,27 @@ def favorite(request, key):
     return JsonResponse(Err.unsuportedMethod())
 
 ##################################################################################################################################################
-#route backend/{key}/pinuniverse: v
+#route backend/{key}/pinuniverse/{account_id}: v
 #GET:lấy các pinuniverse
 #PUT:chọn pinuniverse mới
 #POST:thay đổi thứ tự pinuniverse
 #DELETE:xóa pinuniverse
 
-@csrf_exempt
+#@csrf_exempt
 def pinuniverses(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account=Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     if not request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())
-    account=Account.objects.get(user=request.user)
     reader = ReaderProfile.objects.get(account=account)
     if request.method == 'GET':
         pinuniverses_list=PinUniverse.objects.filter(reader=reader).order_by('pin_number')
-        pinuniverses_json = {pinuniverse.universe.id : pinuniverse.universe.title for i,pinuniverse in enumerate(pinuniverses_list)}
+        pinuniverses_json = {pinuniverse.universe.id : {
+                'title': pinuniverse.universe.title,
+                'chapter_count' : Chapter.objects.filter(universe=pinuniverse.universe).count()
+            } for i,pinuniverse in enumerate(pinuniverses_list)}
         resdata=Err.none()
         resdata.update({'message' : 'Get pinuniveses', 'pinuniverses':pinuniverses_json})
         return JsonResponse(resdata)
@@ -834,10 +915,55 @@ def pinuniverses(request, key):
         return JsonResponse(resdata)
     return JsonResponse(Err.unsuportedMethod())
 
+#route backend/{key}/reading
+def reading(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account=Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
+    if not request.user.is_authenticated:
+        return JsonResponse(Err.requiredLogin())
+    reader = ReaderProfile.objects.get(account=account)
+    if request.method == 'GET':
+        jsonres={'none' : True}
+        if ReadLog.objects.filter(reader=reader).exists():
+            reading_list = ReadLog.objects.filter(reader=reader).order_by('-updated_at')
+            change_reading_list = []
+            for readlog in reading_list:
+                found = False
+                if len(change_reading_list) !=0:
+                    for c_readlog in change_reading_list:
+                        if c_readlog.chapter.universe == readlog.chapter.universe:
+                           found = True
+                if not found:
+                    change_reading_list.append(readlog)
+            jsonres={'none' : False}
+            readlogjson = {}
+            for readlog in change_reading_list:
+                readlogjson.update({
+                    readlog.id: {
+                        'universe' : readlog.chapter.universe.title,
+                        'chapter' : readlog.chapter.title,
+                        'chapter_read_count': 
+                            str(ReadLog.objects.filter(chapter=readlog.chapter, reader=readlog.reader).count()) 
+                            + '/' 
+                            + str(Chapter.objects.filter(universe=readlog.chapter.universe).count())
+                    }}
+                )
+        jsonres.update({'logs': readlogjson})
+        resdata=Err.none()
+        resdata.update(jsonres)
+        return JsonResponse(resdata)
+    return JsonResponse(Err.unsuportedMethod())
+
 ##################################################################################################################################################
 #route backend/{key}/see/contacts: hiển thị contact và số lượng tin nhắn chưa xem v
-@csrf_exempt
+#@csrf_exempt
 def seecontacts(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return JsonResponse(Err.requiredLogin())
@@ -847,7 +973,7 @@ def seecontacts(request, key):
         all_contacts_json = {}
         for contact in all_user_contacts:
             unseencount=0
-            #người gửi là người còn lại, với: Người đã gửi: true | false tương ứng với Contact.user_from | Contact.user_to
+            #người gửi là người còn lại, với: sender: true | false tương ứng với Contact.user_from | Contact.user_to đã gửi
             if account == contact.user_from:
                 unseencount = Message.objects.filter(sender=False, is_read=False, contact=contact).count()
             elif account == contact.user_to:
@@ -870,7 +996,7 @@ def seecontacts(request, key):
 #GET: hiển thị đoạn tin nhắn
 #PUT: soạn tin nhắn
 #DELETE: thu hồi tin nhắn
-@csrf_exempt
+#@csrf_exempt
 def messages(request, key, contact_id):
     if request.user.is_authenticated:
         return JsonResponse(Err.requiredLogin())

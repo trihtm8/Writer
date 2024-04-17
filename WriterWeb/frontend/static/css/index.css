@@ -1,0 +1,35 @@
+
+nav ul li a i{
+    scale: 150%;
+}
+nav ul li a{
+    transition: 2s;
+}
+nav ul li a:hover {
+    scale: 120%;
+}
+footer {
+    position: inherit;
+}
+
+.content {
+    overflow-y: auto;
+    height: 84dvh !important;
+}
+
+.line-right {
+    border-right: solid 1px #464646;
+}
+
+.line-left {
+    border-left: solid 1px #464646;
+}
+
+.line-right, .line-left{
+    margin-top: 10px;
+}
+
+.dropdown-menu > li{
+    text-align: justify;
+    margin: 5px;
+}

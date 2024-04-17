@@ -27,7 +27,10 @@ def create_fake_user():
     return user
 #v
 def create_fake_account(user):
-    profile_image = fake.image_url()
+    imgurl=fake.image_url()
+    while "placekitten.com" in imgurl:
+        imgurl = fake.image_url()
+    profile_image = imgurl
     profile_name = str(user.username).upper()
     created_at = fake.date_time_this_decade()
     company = fake.company()
@@ -63,8 +66,14 @@ def create_fake_genre():
 #v
 def create_fake_universe(master):
     title = fake.word()
-    cover_image = fake.image_url()
-    world_map = fake.image_url()
+    imgurl=fake.image_url()
+    while "placekitten.com" in imgurl:
+        imgurl = fake.image_url()
+    cover_image = imgurl
+    imgurl=fake.image_url()
+    while "placekitten.com" in imgurl:
+        imgurl = fake.image_url()
+    world_map = imgurl
     rules = fake.text()
     free_add_chapter = fake.boolean()
     public = random.choice(['public','subcribe','private'])
@@ -75,7 +84,10 @@ def create_fake_universe(master):
 #v
 def create_fake_local_map(universe):
     local_name = fake.word()
-    local_img = fake.image_url()
+    imgurl=fake.image_url()
+    while "placekitten.com" in imgurl:
+        imgurl = fake.image_url()
+    local_img = imgurl
     return LocalMap.objects.create(universe=universe, local_name=local_name, local_img=local_img)
 #v
 def create_fake_chapter(author, universe):

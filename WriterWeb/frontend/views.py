@@ -16,25 +16,128 @@ from .models import *
 
 import random
 from django.utils import timezone
+from datetime import timedelta
 
-#route: home/ : trang chủ
+import requests
+from django.apps import apps
+Account = apps.get_model('backend', 'Account')
+
+#route: home : trang chủ
 def home(request):
     if request.user.is_authenticated:
+        if Key.objects.filter(user=request.user).exists():
+            if timezone.now()-Key.objects.get(user=request.user).touch > timedelta(hours=2):
+                key = Key.objects.get(user=request.user)
+                key.delete()
+                return redirect(reverse('oops')+'?session_outtime=1')
         return render(request, 'html/index.html')
     loginForm = LoginForm()
     registerForm = RegisterForm()
     return render(request, 'html/login_register.html', {"loginForm":loginForm, "registerForm": registerForm})
 
-#route /registerdone
+#subroute router/{routename}
+def router(request, routename):
+    if not request.user.is_authenticated:
+        return redirect(reverse('oops'))
+    if routename == 'home':
+        urlheader = createKey(request.user, 'header', 'f')
+        urlleft = createKey(request.user, 'indexleft', 'f')
+        urlmain = createKey(request.user, 'indexmain', 'f')
+        urlright = createKey(request.user, 'indexright', 'f')
+        urlheader.save()
+        urlleft.save()
+        urlmain.save()
+        urlright.save()
+        resdata=Err.none()
+        resdata.update({'urlheader' : 'middleware/'+str(urlheader.middlekey)})
+        resdata.update({'urlleft' : 'middleware/'+str(urlleft.middlekey)})
+        resdata.update({'urlmain' : 'middleware/'+str(urlmain.middlekey)})
+        resdata.update({'urlright' : 'middleware/'+str(urlright.middlekey)})
+        return JsonResponse(resdata)
+    return JsonResponse(Err.ortherErr('No route found'))
+
+#route registerdone
 def registerdone(request):
     loginForm = LoginForm()
     registerForm = RegisterForm()
     return render(request, 'html/login_register.html', {'alert':'Your account has been created, try login!', "loginForm":loginForm, "registerForm": registerForm})
+
+#############################################################################################################################################
+#routes with key
+
+####
+#index page
+#route index/header/{key}
+def indexheaderroute(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account  = Account.objects.get(user = request.user)
+    id = account.id
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    response = requests.get('http://127.0.0.1:8000'+reverse('account_info', kwargs={'key' : key, 'account_id':id}), headers=headers, cookies=cookies)
+    if (response.json()['err']):
+        return redirect(reverse('oops'))
+    avartar = response.json()['account']['profile_img_url']
+    return render(request, 'html/subtemplate_router.html', {'route' : 'index/header', 'avartar' : avartar, 'logoutFormhtml': render_to_string('forms/subforms/logoutForm.html',request=request)})
+
+#route index/left/{key}
+def indexleftroute(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account  = Account.objects.get(user = request.user)
+    id = account.id
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    response = requests.get('http://127.0.0.1:8000'+reverse('account_info', kwargs={'key' : key, 'account_id' : id}), headers=headers, cookies=cookies)
+    if (response.json()['err']):
+        return redirect(reverse('oops'))
+    jres = response.json()
+    avartar = jres['account']['profile_img_url']
+    name = jres['account']['profile_name']
+    gengreRes = requests.get('http://127.0.0.1:8000'+reverse('favoritetag', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    tags_data = gengreRes.json().get('tags', {})
+    return render(request, 'html/subtemplate_router.html', {'route': 'index/left', 'avartar' : avartar, 'profilename' : name, 'tags': tags_data})
+
+#route index/main/{key}
+def indexmainroute(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account  = Account.objects.get(user = request.user)
+    id = account.id
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    response = requests.get('http://127.0.0.1:8000'+reverse('see_posts', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    posts = response.json()['post_by_ftag']
+    posts.update(response.json()['post_by_contact'])
+    return render(request, 'html/subtemplate_router.html', {'route': 'index/main', 'posts' : posts})
+
+#route index/right/key
+def indexrightroute(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account  = Account.objects.get(user = request.user)
+    id = account.id
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    pinuni_response = requests.get('http://127.0.0.1:8000'+reverse('pinuniverse', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    pinuniverses = pinuni_response.json()['pinuniverses']
+    reading_response = requests.get('http://127.0.0.1:8000'+reverse('reading', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    logs=reading_response.json()['logs']
+    contacts_response = requests.get('http://127.0.0.1:8000'+reverse('see_contacts', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    print(contacts_response.json())
+    contacts = contacts_response.json()['contacts']
+    return render(request, 'html/subtemplate_router.html', {'route': 'index/right', 'pinuniverses': pinuniverses, 'logs' : logs, 'contacts' : contacts})
+
 ###################################################################################################################################
 #checking routes
 #on "check/"
 
-#route login/
+#route login
 def checkLogin(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -64,7 +167,7 @@ def checkLogin(request):
                 return JsonResponse(Err.requiredVariable('valid username or password'))
     return JsonResponse(Err.unsuportedMethod())
 
-#route logout/
+#route logout
 def checkRegister(request):
     if request.user.is_authenticated:
         return JsonResponse(Err.requiredLogout())
@@ -109,11 +212,15 @@ def middleware(request, middlekey):
     if urls.type == 'b':
         return redirect(reverse(urls.url, kwargs={'key': urls.key.key}))
     elif urls.type == 'f':
-        return redirect(reverse(urls.url))
+        return redirect(reverse(urls.url, kwargs={'key': urls.key.key}))
 
-#route oops/ : return oops site
+#route oops : return oops site
 def oops(request):
-    return render(request, 'html/oops.html')
+    session_outtime = False
+    if 'session_outtime' in request.GET:
+        session_outtime = True
+        logout(request)
+    return render(request, 'html/oops.html', {'session_outtime': session_outtime})
 
 #function create new Key
 def createKey(user, urlroute, type):
@@ -127,7 +234,7 @@ def createKey(user, urlroute, type):
                 newmiddlekey = random.randint(100000, 999999)
                 if not Urls.objects.filter(middlekey=newmiddlekey).exists():
                     break
-            url = Urls.objects.create(key=key, middlekey=newmiddlekey, url=urlroute)
+            url = Urls.objects.create(key=key, middlekey=newmiddlekey, url=urlroute, type=type)
     else:
         while True:
             newkey = random.randint(10000, 99999)
@@ -148,3 +255,12 @@ def touch(key: Key):
                 break
     key.key=newkey
     key.save()
+    urls = Urls.objects.filter(key=key)
+    if urls.exists():
+        for url in urls:
+            while True:
+                newmiddlekey = random.randint(100000, 999999)
+                if not Urls.objects.filter(middlekey=newmiddlekey).exists():
+                    break
+            url.middlekey=newmiddlekey
+            url.save()

@@ -1,0 +1,24 @@
+{%load static%}
+{% if  route == 'index/header'%}
+
+{% include "../subtemplates/index/header.html" with logoutForm=logoutFormhtml %}
+
+{% endif %}
+
+{% if route == 'index/left' %}
+
+{% include "../subtemplates/index/left.html" with name=profilename %}
+
+{% endif %}
+
+{% if route == 'index/main' %}
+
+{% include "../subtemplates/index/main.html" %}
+
+{% endif %}
+
+{% if route == 'index/right' %}
+
+{% include "../subtemplates/index/right.html" %}
+
+{% endif %}
