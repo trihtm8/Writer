@@ -22,4 +22,6 @@ urlpatterns = [
     path('pinuniverse', pinuniverses, name='pinuniverse'),#
     path('see/contacts', seecontacts, name='see_contacts'),#
     path('see/reading', reading, name='reading'),
+    path('see/myposts', myposts, name='myposts'),
+    path('comments/<int:chapter_id>', comments, name='comments')
 ]

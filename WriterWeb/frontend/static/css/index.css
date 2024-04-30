@@ -33,3 +33,231 @@ footer {
     text-align: justify;
     margin: 5px;
 }
+
+.top-right{
+    display: block;
+}
+
+.unseencount{
+    border-radius: 50%;
+    width: 15px;
+    text-align: center;
+}
+
+#personal-intro {
+    border: solid 2px #000000;
+    background-image: url('../img/Logo.png');      
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px;
+    position: relative; 
+    border-radius: 10px;
+    margin: 6px;
+}
+#avartar {
+    border: solid 2px #000000;
+    position: absolute;
+    height: 180px;
+    width: 180px;
+    border-radius: 50%;
+    left: 5px;
+    bottom: 5px;
+}
+#personal-name-blog {
+    border: solid 2px #000000;
+    width: 70%;
+    border-radius: 10px;
+    position: absolute;
+    right: 5px;
+    bottom: 15px;
+    background-color: #ffffff;
+}
+#personal-name-blog > * {
+    display: inline-block;
+}
+.reader-level {
+    border: solid 2px #000000;
+    border-radius: 10px;
+    margin-right: 5px;
+}
+.author-level {
+    border: solid 2px #000000;
+    border-radius: 10px;
+    margin-right: 5px;
+}
+#personal-nav {
+    text-align: center;
+    border: solid 2px #000000;
+    border-radius: 5px;
+}
+
+#personal-nav > button {
+    border: none;
+}
+
+#view-chapter-intro {
+    border: #000000 solid 2px;
+}
+
+#view-chapter-intro {
+    height: 150px;
+    background-image: linear-gradient(to bottom right, #3498db, #e74c3c);
+    position: relative;
+}
+#chapter-name-blog {
+    background-color: #ffffff;
+    border: #000000 solid 2px;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: fit-content;
+    max-width: 70%;
+    overflow-x: hidden;
+}
+#chapter-controller {
+    margin-bottom: 50px;
+    position: relative;
+    z-index: 2;
+}
+#chapter-controller > * {
+    position: absolute;
+    display: block;
+}
+#previous-chapter-btn {
+    left: 0px;
+}
+#next-chapter-btn {
+    right: 0px;
+}
+#chapter-list {
+    left: 30%;
+    width: 40%;
+}
+#chapter-list > #chapter-dropdown {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+#chapter-dropdown {
+    max-height: 215px;
+    overflow-y: auto ;
+}
+#chapter-dropdown > .now-chapter{
+    border: #27ae60 dashed;
+}
+#now-chapter-show > button{
+    width: 100%;
+}
+.chapter-dropdown-item {
+    width: 100%;
+}
+.chapter-dropdown-item > button {
+    text-decoration: none;
+    width: 100%;
+    border: 0px;
+}
+.chapter-dropdown-item > button:hover {
+    background-color: #7c7c7c;
+}
+#chapter-cover-img {
+    border: #000000 solid 2px;
+    height: 140px;
+    width: 250px;
+    right: 4px;
+    top: 4px;
+    position: absolute;
+}
+
+#comments-list {
+    border: #000000 solid 2px;
+    height: 480px;
+    overflow-y: auto;
+}
+#your-comment > input {
+    right: 30px;
+    height: 40px;
+    width: 80%;
+    border-radius: 20px;
+}
+
+.circle-container > img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+.comments-blog {
+    position: relative;
+}
+.comment-content {
+    background-color: #cfcfcf;
+    height: fit-content;
+    border-radius: 10px;
+    position: absolute;
+    width: 87%;
+    right: 2px;
+    top: 2px;
+    max-height: 90px;
+    overflow-y: auto;
+}
+.comment-content > p {
+    margin: 5px;
+}
+.comments-blog > .circle-container {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+}
+
+#view-main{
+    border: #000000 solid 2px;
+    border-radius: 5px;
+    padding: 1%;
+}
+
+.show-contacts {
+    border: #000000 solid 2px;
+    border-radius: 5px;
+}
+
+.show-contacts > h2 {
+    background-color: #27ae60;
+    border-radius: 3px;
+}
+
+.show-contacts > .universe-card{
+    border: #000000 solid 2px;
+    border-radius: 5px;
+    height: 200px;
+    margin: 5px;
+}
+
+.universe-card img {
+    height: 196px;
+    width: 285px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.contact-banner {
+    border: #000000 solid 2px;
+    border-radius: 5px;
+    margin: 10px;
+    width: 150px;
+    height: 200px;
+}
+
+.contact-banner > img {
+    width: 146px;
+    height: 100px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.contact-banner > p {
+    margin-bottom: 5px;
+}
+
+.contact-banner > .d-flex > button {
+    margin-left: 5px;
+}

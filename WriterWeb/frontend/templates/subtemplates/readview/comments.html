@@ -1,0 +1,25 @@
+{% load static %}
+<div class='post my-shadow' style="border: solid 2px; border-color: black; height: fit-content;">
+    <div class="post-interaction d-flex" style="text-align: center; border: solid 2px; border-color: black; height: fit-content; margin: 2px;">
+        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-right: 10px;"><i class="fa-solid fa-star-half-stroke" style="color: black; font-size: 30px;"></i> {{ chapter_info.average_rating }}</button>
+        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px;"><i class="fa-regular fa-comment-dots" style="color: black; font-size: 30px;"></i> {{ chapter_info.chapter_comment_count }}</button>
+        <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> {{ chapter_info.shared_count }}</button>
+    </div>
+</div>
+<div id="comments-list" class='my-shadow'>
+    {% for key, comment in comments.items %}
+    <div class="comments-blog" >
+        <div class="circle-container"><img src="{{ comment.reader_img}}" alt="Anhr đại diện"></div>
+        <div class="comment-content">
+            <p><strong>{{ comment.reader }}</strong> <span class='text-muted'>{{ comment.created_at }}</span></p>
+            <p>{{ comment.comment }}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div id="your-comment">
+    <div class="circle-container my-shadow"><img src="{% static "img/Logo.png" %}" alt="Anhr đại diện"></div>
+    <input class="my-shadow" type="text">
+    <button class="my-shadow" style='width: 40px; height: 40px; margin-top: 0px'><i class="fa-regular fa-paper-plane"></i></button>
+</div>

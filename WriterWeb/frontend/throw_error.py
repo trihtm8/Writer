@@ -53,6 +53,6 @@ class Err:
     
     def ortherErr(seft, detail):
         return{
-            seft.a : True,
+            seft.e : True,
             seft.d : detail
         }

@@ -142,9 +142,17 @@ button:hover {
     color: #fff;
     border: 2px solid #2980b9;
 }
-.level-1 { background-color: #e74c3c; border-color: #c0392b; }
-.level-2 { background-color: #2ecc71; border-color: #27ae60; }
-.level-3 { background-color: #f39c12; border-color: #d35400; }
+.level-0 { background-color: #e74c3c; border-color: #c0392b; }
+.level-1 { background-color: #2ecc71; border-color: #27ae60; }
+.level-2 { background-color: #f39c12; border-color: #d35400; }
+.level-3 { background-color: #3498db; border-color: #2980b9; }
+.level-4 { background-color: #9b59b6; border-color: #8e44ad; }
+.level-5 { background-color: #34495e; border-color: #2c3e50; }
+.level-6 { background-color: #1abc9c; border-color: #16a085; }
+.level-7 { background-color: #e67e22; border-color: #d35400; }
+.level-8 { background-color: #7f8c8d; border-color: #707b7c; }
+.level-9 { background-color: #95a5a6; border-color: #7f8c8d; }
+.level-10 { background-color: #16a085; border-color: #1abc9c; }
 #universe-followers-blog {
     height: 55px;
     border: solid 2px #000000;
@@ -374,4 +382,16 @@ button:hover {
 
 .my-shadow {
     box-shadow: 10px 5px #c88e8e !important;
+    margin-top: 5px;
+}
+
+.fade {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+.show {
+    opacity: 1;
+    pointer-events: auto;
 }

@@ -99,9 +99,8 @@ def create_fake_chapter(author, universe):
     return chapter
 #v
 def create_fake_paragraphs(chapter):
-    content = fake.text()
     for i in range(10):
-        Paragraph.objects.create(ordinal_number = i, chapter = chapter, content=content)
+        Paragraph.objects.create(ordinal_number = i, chapter = chapter, content=fake.text())
 #v
 def create_fake_pin_universe(reader, universe):
     pin_number = fake.random_int(min=1, max=10)

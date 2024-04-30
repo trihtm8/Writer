@@ -36,6 +36,14 @@ def home(request):
     return render(request, 'html/login_register.html', {"loginForm":loginForm, "registerForm": registerForm})
 
 #subroute router/{routename}
+import re
+def extract_number_chapter(string):
+    match = re.match(r"readview@(\d+)$", string)
+    if match:
+        return int(match.group(1))
+    else:
+        return None
+
 def router(request, routename):
     if not request.user.is_authenticated:
         return redirect(reverse('oops'))
@@ -54,6 +62,23 @@ def router(request, routename):
         resdata.update({'urlmain' : 'middleware/'+str(urlmain.middlekey)})
         resdata.update({'urlright' : 'middleware/'+str(urlright.middlekey)})
         return JsonResponse(resdata)
+    if routename == 'personal':
+        urlmain = createKey(request.user, 'personalmain', 'f')
+        urlmain.save()
+        resdata=Err.none()
+        resdata.update({'urlmain' : 'middleware/'+str(urlmain.middlekey)})
+        return JsonResponse(resdata)
+    if routename == 'personalinfo':
+        key = Key.objects.get(user = request.user)
+        return personalinfo(request=request, key=key.key)
+    if extract_number_chapter(routename) != None:
+        return readview(request, extract_number_chapter(routename))
+    if routename == 'friends':
+        key = Key.objects.get(user = request.user)
+        return friends(request, key.key)
+    if routename == 'universes':
+        key = Key.objects.get(user = request.user)
+        return universes(request, key.key)
     return JsonResponse(Err.ortherErr('No route found'))
 
 #route registerdone
@@ -129,10 +154,87 @@ def indexrightroute(request, key):
     reading_response = requests.get('http://127.0.0.1:8000'+reverse('reading', kwargs={'key' : key}), headers=headers, cookies=cookies)
     logs=reading_response.json()['logs']
     contacts_response = requests.get('http://127.0.0.1:8000'+reverse('see_contacts', kwargs={'key' : key}), headers=headers, cookies=cookies)
-    print(contacts_response.json())
     contacts = contacts_response.json()['contacts']
     return render(request, 'html/subtemplate_router.html', {'route': 'index/right', 'pinuniverses': pinuniverses, 'logs' : logs, 'contacts' : contacts})
 
+####
+#personal page
+#route personal/main/{key}
+def personalmain(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account= Account.objects.get(user = request.user)
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    myposts = requests.get('http://127.0.0.1:8000'+reverse('myposts', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    account_response = requests.get('http://127.0.0.1:8000'+reverse('account_info', kwargs={'key' : key, 'account_id' : account.id}), headers=headers, cookies=cookies)
+    account = account_response.json()['account']
+    account.update({'reader_lv' : account['reader_exp'] // 10, 'author_lv' : account['author_exp']//10})
+    feed_html = render_to_string('subtemplates/personal/feed.html', {'posts' : myposts.json()['posts']})
+    return render(request, 'html/subtemplate_router.html', {'route' : 'personal/intro', 'account' : account, 'main_content' : feed_html})
+
+def personalinfo(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    account= Account.objects.get(user = request.user)
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    account_response = requests.get('http://127.0.0.1:8000'+reverse('account_info', kwargs={'key' : key, 'account_id' : account.id}), headers=headers, cookies=cookies)
+    account = account_response.json()['account']
+    return render(request, 'html/subtemplate_router.html', {'route' : 'personal/info', 'account' : account})
+
+####
+#readview
+
+def readview(request, chapterid):
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    key = Key.objects.get(user = request.user).key
+    chapter_response = requests.get('http://127.0.0.1:8000'+reverse('chapter_info', kwargs={'key' : key, 'chapter_id' : chapterid}), headers=headers, cookies=cookies)
+    chapter_info = chapter_response.json()
+    for keyi, value in chapter_info['paragraph_ids'].items():
+        paragraph_content = requests.get('http://127.0.0.1:8000'+reverse('paragraph_info', kwargs={'key' : key, 'paragraph_id' : value['id']}), headers=headers, cookies=cookies)
+        chapter_info['paragraph_ids'][keyi].update({'content' : paragraph_content.json()['content']})
+    mainhtml = render_to_string('html/subtemplate_router.html', {
+        'route' : 'readview/main', 
+        'view_main' : render_to_string('subtemplates/readview/viewmain.html', { 'chapter_info' : chapter_info}),
+        'chapter_info' : chapter_info
+    })
+    comments = requests.get('http://127.0.0.1:8000'+reverse('comments', kwargs={'key' : key, 'chapter_id' : chapterid}), headers=headers, cookies=cookies)
+    comments = comments.json()['comments']
+    righthtml = render_to_string('subtemplates/readview/comments.html', {'chapter_info' : chapter_info, 'comments' : comments})
+    jsonres = Err.none()
+    jsonres.update({'mainhtml' : mainhtml, 'righthtml' : righthtml})
+    return JsonResponse(jsonres)
+
+####
+#freinds
+
+def friends(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    contacts_response = requests.get('http://127.0.0.1:8000'+reverse('see_contacts', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    contacts = contacts_response.json()
+    return render(request, 'html/subtemplate_router.html', {'route' : 'friends', 'contacts' : contacts})
+
+####
+#universes
+
+def universes(request, key):
+    userHasKey = Key.objects.get(key=key).user
+    if userHasKey != request.user:
+        return redirect(reverse('oops'))
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    pinuniverses = requests.get('http://127.0.0.1:8000'+reverse('pinuniverse', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    print(pinuniverses.json())
+    return render(request, 'html/subtemplate_router.html', {'route' : 'universes', 'pinuniverses' : pinuniverses.json()['pinuniverses']})
+    
 ###################################################################################################################################
 #checking routes
 #on "check/"

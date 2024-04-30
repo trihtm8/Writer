@@ -1,0 +1,21 @@
+<div id="personal-intro" class="my-shadow">
+    <img src="{{ account.profile_img_url }}" alt="Ảnh đại diện" id="avartar">
+    <div id="personal-name-blog">
+        <h3>{{ account.profile_name }}</h3>
+        <div class="reader-level float-end">
+            <i class="fa-solid fa-eye" style="color: #000000;"></i>
+            <div class="level-badge level-{{ account.reader_lv }}">lv.{{ account.reader_lv }}</div>
+        </div>
+        <div class="author-level float-end">
+            <i class="fa-solid fa-pen-nib" style="color: #000000;"></i>
+            <div class="level-badge level-{{ account.author_lv }}">lv.{{ account.author_lv }}</div>
+        </div>
+    </div>
+</div>
+<div id='personal-nav' class="my-shadow">
+    <button id="personal-feed-nav" class="now-link">Feed</button></li>
+    <button id="personal-info-nav">Personal Information</button></li>
+</div>
+<div id="personal-main-content">
+    {{ main_content }}
+</div>

@@ -9,4 +9,5 @@ urlpatterns = [
     path('registerdone', registerdone, name='registerdone'),
     path('router/<str:routename>', router, name='router'),
     path('index/', include('frontend.indexurls')),
+    path('personal/', include('frontend.personalurls')),
 ]

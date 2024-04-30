@@ -179,7 +179,10 @@ def register(request, key):
         user.first_name=first_name
         user.email=email
         user.save()
-        acc = Account.objects.create(user=user, company=company, profile_image = fake.image_url(), profile_name=profile_name)
+        imgurl=fake.image_url()
+        while "placekitten.com" in imgurl:
+            imgurl = fake.image_url()
+        acc = Account.objects.create(user=user, company=company, profile_image = imgurl, profile_name=profile_name)
         AuthorProfile.objects.create(account=acc, pen_name=pen_name)
         ReaderProfile.objects.create(account=acc)
         return redirect(reverse('registerdone'))
@@ -464,10 +467,27 @@ def newchapter(request, key, uni_id):
 #POST: Cập nhật
 #DELETE: xóa chapter
 #@csrf_exempt
+def check_key(json_data, key):
+    have_next=False
+    have_prev=False
+    keys = list(json_data.keys())
+    index = keys.index(key)
+    have_prev = index > 0
+    have_next = index < len(keys) - 1
+    prev_id = keys[index - 1] if index > 0 else None
+    next_id = keys[index + 1] if index < len(keys) - 1 else None
+    return {
+        'have_prev' : have_prev,
+        'prev_id' : prev_id,
+        'have_next' : have_next,
+        'next_id' : next_id,
+    }
+
 def chapter(request, key, chapter_id):
     try:
         chapter=Chapter.objects.get(id=chapter_id)
         paragraphs = Paragraph.objects.filter(chapter = chapter).order_by('ordinal_number')
+        chapters = Chapter.objects.filter(universe = chapter.universe)
     except ObjectDoesNotExist:
         return JsonResponse(Err.objectDoesNotExists('Chapter'))
     is_master = False
@@ -480,15 +500,29 @@ def chapter(request, key, chapter_id):
             is_master = True
     if request.method == 'GET':
         paragraph_ids = {paragraph.ordinal_number: {'id' : paragraph.id} for i,paragraph in enumerate(paragraphs)}
+        orther_chapters = {c.id: c.title for i, c in enumerate(chapters)}
+        chapter_ratings = Rating.objects.filter(chapter=chapter)
+        average_rating = chapter_ratings.aggregate(Avg('start'))['start__avg']
+        chapter_comment_count = Comment.objects.filter(chapter=chapter).count()
+        shared_count = SharedPost.objects.filter(chapter=chapter).count()
         chapter_info={
             'message' : 'Get chapter info',
+            'id' : str(chapter_id),
             'author' : chapter.author.pen_name,
             'universe' : chapter.universe.title,
             'title' : chapter.title,
             'intro' : chapter.intro,
             'accept' : chapter.accept,
-            'paragraph_ids'  : paragraph_ids
+            'paragraph_ids'  : paragraph_ids,
+            'orther_chapters' : orther_chapters,
+            'image' : makeUrl(chapter.universe.cover_image.url),
+            'a_image' : makeUrl(chapter.author.account.profile_image.url),
+            'author_lv' : chapter.author.exp // 10,
+            'average_rating' : average_rating,
+            'chapter_comment_count' : chapter_comment_count,
+            'shared_count' : shared_count
         }
+        chapter_info.update(check_key(chapter_info['orther_chapters'], chapter_id))
         return JsonResponse(chapter_info)
     if request.method == "POST":
         if (not is_master and not is_auth):
@@ -615,8 +649,8 @@ def posts(request, key):
                     if _posts.count() != 0:
                         for post in _posts:
                             keyobj = Key.objects.get(key=key)
-                            if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id)):
-                                middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id)).middlekey
+                            if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id), key=keyobj):
+                                middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id), key=keyobj).middlekey
                             else:
                                 while True:
                                     newmiddlekey = random.randint(100000, 999999)
@@ -632,12 +666,16 @@ def posts(request, key):
                                 post.id : {
                                     'content' : post.content, 
                                     'chapter_title' : post.chapter.title,
+                                    'chapter_id': post.chapter.id,
                                     'user_post' : post.reader.account.profile_name,
                                     'avartar' : makeUrl(post.reader.account.profile_image.url),
                                     'account_to_acount_middlekey' : middlekey,
                                     'universe_img' : makeUrl(post.chapter.universe.cover_image.url),
+                                    'universe_title' : post.chapter.universe.title,
                                     'time_stamp' : post.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M"),
                                     'chapter_intro' : post.chapter.intro,
+                                    'chapter_author': post.chapter.author.pen_name,
+                                    'author_avartar': makeUrl(post.chapter.author.account.profile_image.url),
                                     'is_accepted' : True if post.chapter.accept == 'accepted' else False,
                                     'chapter_star' : round(average_rating, 2) if average_rating is not None else '-',
                                     'count_cmt' : chapter_comment_count,
@@ -662,8 +700,8 @@ def posts(request, key):
             if _posts.count() != 0:
                 for post in _posts:
                     keyobj = Key.objects.get(key=key)
-                    if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id)):
-                        middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id)).middlekey
+                    if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id), key=keyobj):
+                        middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id), key=keyobj).middlekey
                     else:
                         while True:
                             newmiddlekey = random.randint(100000, 999999)
@@ -679,12 +717,17 @@ def posts(request, key):
                         post.id : {
                             'content' : post.content, 
                             'chapter_title' : post.chapter.title,
+                            'chapter_id': post.chapter.id,
                             'user_post' : post.reader.account.profile_name,
                             'avartar' : makeUrl(post.reader.account.profile_image.url),
                             'account_to_acount_middlekey' : middlekey,
                             'universe_img' : makeUrl(post.chapter.universe.cover_image.url),
+                            'universe_title' : post.chapter.universe.title,
                             'time_stamp' : post.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M"),
                             'chapter_intro' : post.chapter.intro,
+                            'chapter_author': post.chapter.author.pen_name,
+                            'author_avartar': makeUrl(post.chapter.author.account.profile_image.url),
+                            'is_accepted' : True if post.chapter.accept == 'accepted' else False,
                             'chapter_star' : round(average_rating, 2) if average_rating is not None else '-',
                             'count_cmt' : chapter_comment_count,
                             'count_shared' : shared_count
@@ -696,6 +739,56 @@ def posts(request, key):
     jsonres = Err.none()
     jsonres.update({'post_by_ftag' : posts_by_tag, 'post_by_contact' : posts_by_contact})
     return JsonResponse (jsonres)
+
+def myposts(request, key):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
+    reader = ReaderProfile.objects.get(account=account)
+    if request.method == 'GET':
+        posts = SharedPost.objects.filter(reader=reader)
+        postsJson = {}
+        if posts.count() != 0:
+            for post in posts:
+                keyobj = Key.objects.get(key=key)
+                if Urls.objects.filter(url = 'touser@'+str(post.reader.account.user.id)).filter(key=keyobj):
+                    middlekey = Urls.objects.get(url = 'touser@'+str(post.reader.account.user.id), key=keyobj).middlekey
+                else:
+                    while True:
+                        newmiddlekey = random.randint(100000, 999999)
+                        if not Urls.objects.filter(middlekey=newmiddlekey).exists():
+                            break
+                    Urls.objects.create(key=keyobj, middlekey=newmiddlekey, url='touser@'+str(post.reader.account.user.id), type='u')
+                    middlekey = newmiddlekey
+                chapter_ratings = Rating.objects.filter(chapter=post.chapter)
+                average_rating = chapter_ratings.aggregate(Avg('start'))['start__avg']
+                chapter_comment_count = Comment.objects.filter(chapter=post.chapter).count()
+                shared_count = SharedPost.objects.filter(chapter=post.chapter).count()
+                updateJson = {
+                    post.id : {
+                        'content' : post.content, 
+                        'chapter_title' : post.chapter.title,
+                        'chapter_id': post.chapter.id,
+                        'user_post' : post.reader.account.profile_name,
+                        'avartar' : makeUrl(post.reader.account.profile_image.url),
+                        'account_to_acount_middlekey' : middlekey,
+                        'universe_img' : makeUrl(post.chapter.universe.cover_image.url),
+                        'universe_title' : post.chapter.universe.title,
+                        'time_stamp' : post.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M"),
+                        'chapter_intro' : post.chapter.intro,
+                        'chapter_author': post.chapter.author.pen_name,
+                        'author_avartar': makeUrl(post.chapter.author.account.profile_image.url),
+                        'is_accepted' : True if post.chapter.accept == 'accepted' else False,
+                        'chapter_star' : round(average_rating, 2) if average_rating is not None else '-',
+                        'count_cmt' : chapter_comment_count,
+                        'count_shared' : shared_count
+                    }
+                }
+                postsJson.update(updateJson)
+        jsonres = Err.none()
+        jsonres.update({'posts' : postsJson})
+        return JsonResponse (jsonres)
 
 ##################################################################################################################################################
 #route backend/{key}/post/{post_id} v
@@ -863,7 +956,10 @@ def pinuniverses(request, key):
         pinuniverses_list=PinUniverse.objects.filter(reader=reader).order_by('pin_number')
         pinuniverses_json = {pinuniverse.universe.id : {
                 'title': pinuniverse.universe.title,
-                'chapter_count' : Chapter.objects.filter(universe=pinuniverse.universe).count()
+                'chapter_count' : Chapter.objects.filter(universe=pinuniverse.universe).count(),
+                'image' : makeUrl(pinuniverse.universe.cover_image.url),
+                'rules' : pinuniverse.universe.rules,
+                'firstchapter_id' : Chapter.objects.filter(universe=pinuniverse.universe).first().id
             } for i,pinuniverse in enumerate(pinuniverses_list)}
         resdata=Err.none()
         resdata.update({'message' : 'Get pinuniveses', 'pinuniverses':pinuniverses_json})
@@ -926,6 +1022,7 @@ def reading(request, key):
     reader = ReaderProfile.objects.get(account=account)
     if request.method == 'GET':
         jsonres={'none' : True}
+        readlogjson = {}
         if ReadLog.objects.filter(reader=reader).exists():
             reading_list = ReadLog.objects.filter(reader=reader).order_by('-updated_at')
             change_reading_list = []
@@ -938,12 +1035,12 @@ def reading(request, key):
                 if not found:
                     change_reading_list.append(readlog)
             jsonres={'none' : False}
-            readlogjson = {}
             for readlog in change_reading_list:
                 readlogjson.update({
                     readlog.id: {
                         'universe' : readlog.chapter.universe.title,
                         'chapter' : readlog.chapter.title,
+                        'chapter_id' : readlog.chapter.id,
                         'chapter_read_count': 
                             str(ReadLog.objects.filter(chapter=readlog.chapter, reader=readlog.reader).count()) 
                             + '/' 
@@ -955,7 +1052,6 @@ def reading(request, key):
         resdata.update(jsonres)
         return JsonResponse(resdata)
     return JsonResponse(Err.unsuportedMethod())
-
 ##################################################################################################################################################
 #route backend/{key}/see/contacts: hiển thị contact và số lượng tin nhắn chưa xem v
 #@csrf_exempt
@@ -970,26 +1066,82 @@ def seecontacts(request, key):
         account=Account.objects.get(user=request.user)
         query = Query(user_from=account, confirm='accepted') | Query(user_to=account, confirm='accepted')
         all_user_contacts=Contact.objects.filter(query)
+        save_ids = []
         all_contacts_json = {}
         for contact in all_user_contacts:
             unseencount=0
             #người gửi là người còn lại, với: sender: true | false tương ứng với Contact.user_from | Contact.user_to đã gửi
             if account == contact.user_from:
                 unseencount = Message.objects.filter(sender=False, is_read=False, contact=contact).count()
+                save_ids.append(contact.user_to.id)
             elif account == contact.user_to:
                 unseencount = Message.objects.filter(sender=True, is_read=False, contact=contact).count()
+                save_ids.append(contact.user_from.id)
             add_json = {
                 contact.id : {
-                    'name' : contact.user_from.profile_name, 'profile_img' : makeUrl(contact.user_from.profile_image.url), 'unseencount' : unseencount
+                    'name' : contact.user_from.profile_name, 
+                    'profile_img' : makeUrl(contact.user_from.profile_image.url), 
+                    'unseencount' : unseencount
                 } if account==contact.user_to else {
-                    'name' : contact.user_to.profile_name, 'profile_img' : makeUrl(contact.user_to.profile_image.url), 'unseencount' :unseencount
+                    'name' : contact.user_to.profile_name, 
+                    'profile_img' : makeUrl(contact.user_to.profile_image.url), 
+                    'unseencount' :unseencount
                 }
             }
             all_contacts_json.update(add_json)
+        query = Query(user_from=account, confirm='waiting')
+        sent_contacts = Contact.objects.filter(query)
+        sent_contacts_json = {}
+        for contact in sent_contacts:
+            save_ids.append(contact.user_to.id)
+            add_json= {
+                contact.id : {
+                    'name' : contact.user_to.profile_name,
+                    'profile_img' : makeUrl(contact.user_to.profile_image.url),
+                    'unseencount' : Message.objects.filter(sender=False, is_read=False, contact=contact).count()
+                }
+            }
+            sent_contacts_json.update(add_json)
+        query = Query(user_to=account, confirm='waiting')
+        received_contacts = Contact.objects.filter(query)
+        received_contacts_json = {}
+        for contact in received_contacts:
+            save_ids.append(contact.user_from.id)
+            add_json= {
+                contact.id : {
+                    'name' : contact.user_from.profile_name,
+                    'profile_img' : makeUrl(contact.user_from.profile_image.url),
+                    'unseencount' : Message.objects.filter(sender=True, is_read=False, contact=contact).count()
+                }
+            }
+            received_contacts_json.update(add_json)
+        reader = ReaderProfile.objects.get(account=account)
+        same_tag_users = get_similar_readers(reader).exclude(account_id__in=save_ids)
+        same_tag_users_json = {}
+        for reader in same_tag_users:
+            add_json={
+                reader.id : {
+                    'name' : reader.account.profile_name,
+                    'profile_img' : makeUrl(reader.account.profile_image.url),
+                }
+            }
+            same_tag_users_json.update(add_json)
         resdata=Err.none()
-        resdata.update({'message':'Get your contacts', 'contacts' : all_contacts_json})
+        resdata.update({'message':'Get your contacts', 'contacts' : all_contacts_json, 'request_sent' : sent_contacts_json, 'request_received' : received_contacts_json, 'same_tag' : same_tag_users_json})
         return JsonResponse(resdata)
     return JsonResponse(Err.unsuportedMethod())
+
+def get_similar_readers(reader):
+    # Lấy thể loại yêu thích của người đọc đã nhập vào
+    reader_genres = FavoriteGenre.objects.filter(reader=reader).values_list('genre', flat=True)
+    
+    # Lấy danh sách các người đọc có thể loại yêu thích giống nhau (trừ người đọc đã nhập vào)
+    similar_readers = FavoriteGenre.objects.filter(
+        genre__in=reader_genres
+    ).exclude(
+        reader=reader
+    ).values_list('reader', flat=True).distinct()
+    return ReaderProfile.objects.filter(id__in=similar_readers)
 
 ##################################################################################################################################################
 #route backend/{key}/message/<contact_id>:
@@ -1027,7 +1179,39 @@ def messages(request, key, contact_id):
     
 
 ##################################################################################################################################################
+#route backend/{key}/comments/{chapter_id}
 
+def comments(request, key, chapter_id):
+    userhasKey = Key.objects.get(key=key).user
+    account = Account.objects.get(user=request.user)
+    if account.user != userhasKey:
+        return JsonResponse(Err.permissionDeny())
+    chapter = Chapter.objects.get(id = chapter_id)
+    comments = Comment.objects.filter(chapter = chapter)
+    comments_json = {}
+    for comment in comments:
+        keyobj = Key.objects.get(key=key)
+        if Urls.objects.filter(url = 'touser@'+str(comment.reader.account.user.id), key=keyobj):
+            middlekey = Urls.objects.get(url = 'touser@'+str(comment.reader.account.user.id), key=keyobj).middlekey
+        else:
+            while True:
+                newmiddlekey = random.randint(100000, 999999)
+                if not Urls.objects.filter(middlekey=newmiddlekey).exists():
+                    break
+                Urls.objects.create(key=keyobj, middlekey=newmiddlekey, url='touser@'+str(comment.reader.account.user.id), type='u')
+                middlekey = newmiddlekey
+        comments_json.update({
+            comment.id : {
+                'reader' : comment.reader.account.profile_name,
+                'reader_account_middleware': middlekey,
+                'reader_img' : makeUrl(comment.reader.account.profile_image.url),
+                'comment' : comment.content,
+                'created_at' : comment.created_at.astimezone(vn_timezone).strftime("%d/%m/%Y %H:%M")
+            }
+        })
+    jsonres = Err.none()
+    jsonres.update({'comments' : comments_json})
+    return JsonResponse(jsonres)
 ##################################################################################################################################################
 
 ##################################################################################################################################################

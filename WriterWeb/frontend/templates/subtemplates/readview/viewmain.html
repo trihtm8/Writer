@@ -1,0 +1,14 @@
+<h2>{{ chapter_info.universe }}</h2>
+<div id="view-chapter-intro">
+    <div id="chapter-name-blog">
+        <h2>{{ chapter_info.title }}</h2>
+        <h3>{{ chapter_info.author }}  <div class="level-badge level-{{ chapter_info.author_lv }}">Lv.{{ chapter_info.author_lv }}</div></h3>
+    </div>
+    <div></div>
+    <div id="chapter-cover-img"><img src="{{ chapter_info.image }}" alt="Ảnh bìa chương" style="width: 100%; height: 100%;"></div>
+</div>
+<div class="view-content" >
+    {% for key, value in chapter_info.paragraph_ids.items %}
+        <p>{{ value.content }}</p>
+    {% endfor %}
+</div>

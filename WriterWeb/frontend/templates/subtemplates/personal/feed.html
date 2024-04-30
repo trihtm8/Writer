@@ -1,6 +1,4 @@
-{% load static %}
-    <button style="width: 100%;" class="my-shadow"><h3>+ New post</h3></button>
-    {% for postid, content in posts.items %}
+{% for postid, content in posts.items %}
     <div class="post my-shadow" style="border: solid 2px; border-color: black; height: fit-content;">
         <div class="post-header">
             <h3 style='margin: 5px; display: flex;'>
@@ -57,4 +55,4 @@
             <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> {{ content.count_shared }}</button>
         </div>
     </div>
-    {% endfor %}
+{% endfor %}

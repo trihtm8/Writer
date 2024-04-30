@@ -1,11 +1,11 @@
 {% load static %}
-<button class="my-shadow"><div class="circle-container"><img src="{{ avartar }}" alt="Ảnh đại diện"></div> <strong>{{ name }}</strong></button>
-<button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-user-group"></i></div> <strong>Bạn bè</strong></button>
-<button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-sun"></i></div> <strong>Vũ trụ</strong></button>
-<button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-magnifying-glass"></i></div> <strong>Tìm kiếm</strong></button>
+<button class="my-shadow" onclick="loadDom('personalpage')"><div class="circle-container"><img src="{{ avartar }}" alt="Ảnh đại diện"></div> <strong>{{ name }}</strong></button>
+<button class="my-shadow" onclick='loadDom("friends")'><div class="circle-container"><i class="fa-solid fa-user-group"></i></div> <strong>Friends</strong></button>
+<button class="my-shadow" onclick='loadDom("universes")'><div class="circle-container"><i class="fa-solid fa-sun"></i></div> <strong>Universes</strong></button>
+<button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-magnifying-glass"></i></div> <strong>Find-machine</strong></button>
 <hr>
 <div id="favorite-tags">
-    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-heart-circle-plus"></i></div> <strong>Yêu thích</strong></button>
+    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-heart-circle-plus"></i></div> <strong>Favorite tags</strong></button>
     <div id="favorite-tags-content" class="tag-content my-shadow" style="margin-top: 5px">
     {% for tag_id, tag_name in tags.items %}
     <button><i class="fa-solid fa-tag"></i> <strong>{{ tag_name }}</strong></button>

@@ -1,6 +1,6 @@
 {% load static %}
 <div id="pin-universe">
-    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-bell"></i></div> <strong>Đã ghim</strong></button>
+    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-circle-plus"></i></div> <strong>Pin Universes</strong></button>
     <div id="pin-universe-content" class="tag-content my-shadow" style="margin-top: 5px">
         {% for id, universe in pinuniverses.items %}
         <button><i class="fa-solid fa-thumbtack"></i> <strong>{{ universe.title }}</strong> ({{ universe.chapter_count }} chapter)</button>
@@ -9,19 +9,19 @@
 </div>
 <hr>
 <div id="continue-read">
-    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-forward-step"></i></div> <strong>Đang đọc</strong></button>
+    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-forward-step"></i></div> <strong>On Reading</strong></button>
     <div id="continue-read-content" class="tag-content my-shadow" style="margin-top: 5px">
         {% for key, log in logs.items %}
-        <button><i class="fa-solid fa-forward-step"></i> <strong>{{ log.universe }}: Chapter {{ log.chapter }}</strong> (đã đọc {{ log.chapter_read_count }} chapter)</button>
+        <button onclick='read("{{ log.chapter_id }}")'><i class="fa-solid fa-forward-step"></i> <strong>{{ log.universe }}: Chapter {{ log.chapter }}</strong> (read {{ log.chapter_read_count }} chapter)</button>
         {% endfor %}
     </div>
 </div>
 <hr>
 <div id="contacts-tag">
-    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-address-book"></i></div> <strong>Liên hệ</strong></button>
+    <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-address-book"></i></div> <strong>Contacts</strong></button>
     <div id="contacts-tag-content" class="tag-content my-shadow" style="margin-top: 5px">
         {% for key, contact in contacts.items %}
-        <button><div class="circle-container"><img src="{{ contact.profile_img }}" alt="Avartar"></div> <strong>{{ contact.name }}</strong></button>
+        <button><div class="circle-container"><img src="{{ contact.profile_img }}" alt="Avartar"></div> <strong>{{ contact.name }}</strong> <span class="{% if contact.unseencount != 0 %}bg-danger{% else %}bg-success{% endif %} text-light unseencount">{{ contact.unseencount }}</span></button>
         {% endfor %}
     </div>
 </div>

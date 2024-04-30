@@ -1,0 +1,64 @@
+<div id='your-contacts-accepted' class='show-contacts my-shadow'>
+    <h2>Your contacts</h2>
+    <div class='d-flex' style='over-flow-y: auto'>
+    {% for key, contact in contacts.contacts.items %}
+    <div class='show-contacts contact-banner'>
+        <img src='{{ contact.profile_img }}'>
+        <p>{{ contact.name|truncatechars:15 }}</p>
+        <p><i class="fa-regular fa-envelope"></i>{{ contact.unseencount }}</p>
+        <div class='d-flex'>
+            <button><i class="fa-solid fa-xmark"></i></button>
+            <button><i class="fa-regular fa-envelope"></i></button>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+<div id='your-requests-sent' class='show-contacts my-shadow'>
+    <h2>Requests sent</h2>
+    <div class='d-flex' style='over-flow-y: auto'>
+    {% for key, contact in contacts.request_sent.items %}
+    <div class='show-contacts contact-banner'>
+        <img src='{{ contact.profile_img }}'>
+        <p>{{ contact.name|truncatechars:15 }}</p>
+        <p><i class="fa-regular fa-envelope"></i>{{ contact.unseencount }}</p>
+        <div class='d-flex'>
+            <button><i class="fa-solid fa-xmark"></i></button>
+            <button><i class="fa-regular fa-envelope"></i></button>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+<div id='your-requests-received' class='show-contacts my-shadow'>
+    <h2>Requests received</h2>
+    <div class='d-flex' style='over-flow-y: auto'>
+    {% for key, contact in contacts.request_received.items %}
+    <div class='show-contacts contact-banner'>
+        <img src='{{ contact.profile_img }}'>
+        <p>{{ contact.name|truncatechars:15 }}</p>
+        <p><i class="fa-regular fa-envelope"></i>{{ contact.unseencount }}</p>
+        <div class='d-flex'>
+            <button><i class="fa-solid fa-xmark"></i></button>
+            <button><i class="fa-solid fa-check"></i></button>
+            <button><i class="fa-regular fa-envelope"></i></button>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+<div id='sample-tag-people' class='show-contacts my-shadow'>
+    <h2>Explore Similar Interests</h2>
+    <div class='d-flex' style='width: 100%; overflow-x: auto;'>
+    {% for key, contact in contacts.same_tag.items %}
+    <div class='show-contacts contact-banner'>
+        <img src='{{ contact.profile_img }}'>
+        <p>{{ contact.name|truncatechars:15 }}</p>
+        <div class='d-flex'>
+            <button><i class="fa-solid fa-person-circle-plus"></i></button>
+            <button><i class="fa-regular fa-envelope"></i></button>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
