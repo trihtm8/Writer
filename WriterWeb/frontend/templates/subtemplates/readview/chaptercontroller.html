@@ -1,6 +1,6 @@
 <div id="chapter-controller">
-    <button class='my-shadow' id="previous-chapter-btn" {% if not chapter_info.have_prev %}disabled{% else %}onclick='read("{{chapter_info.prev_id}}")'{% endif %}><i class="fa-solid fa-arrow-left"></i> Trước</button>
-    <button class='my-shadow' id="next-chapter-btn" {% if not chapter_info.have_next %}disabled{% else %}onclick='read("{{chapter_info.next_id}}")'{% endif %}>Sau <i class="fa-solid fa-arrow-right"></i></button>
+    <button class='my-shadow' id="previous-chapter-btn" {% if not chapter_info.have_prev %}disabled{% else %}onclick='read("{{chapter_info.prev_id}}")'{% endif %}><i class="fa-solid fa-arrow-left"></i> Prev</button>
+    <button class='my-shadow' id="next-chapter-btn" {% if not chapter_info.have_next %}disabled{% else %}onclick='read("{{chapter_info.next_id}}")'{% endif %}>Next <i class="fa-solid fa-arrow-right"></i></button>
     <div id="chapter-list" class='my-shadow' style='border-radius: 5px'>
         <div id="now-chapter-show"><button onclick="toggleDropdownChapter()">Chapter {{ chapter_info.id }}: {{ chapter_info.title }}</button></div>
         <div id="chapter-dropdown" style='border-radius: 5px'>
