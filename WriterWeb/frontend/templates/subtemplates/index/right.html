@@ -21,7 +21,7 @@
     <button class="my-shadow"><div class="circle-container"><i class="fa-solid fa-address-book"></i></div> <strong>Contacts</strong></button>
     <div id="contacts-tag-content" class="tag-content my-shadow" style="margin-top: 5px">
         {% for key, contact in contacts.items %}
-        <button><div class="circle-container"><img src="{{ contact.profile_img }}" alt="Avartar"></div> <strong>{{ contact.name }}</strong> <span class="{% if contact.unseencount != 0 %}bg-danger{% else %}bg-success{% endif %} text-light unseencount">{{ contact.unseencount }}</span></button>
+        <button><div class="circle-container"><img src="{{ contact.profile_img }}"></div> <strong>{{ contact.name }}</strong> <span class="{% if contact.unseencount != 0 %}bg-danger{% else %}bg-success{% endif %} text-light unseencount">{{ contact.unseencount }}</span></button>
         {% endfor %}
     </div>
 </div>

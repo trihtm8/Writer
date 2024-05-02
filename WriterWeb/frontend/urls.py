@@ -10,4 +10,5 @@ urlpatterns = [
     path('router/<str:routename>', router, name='router'),
     path('index/', include('frontend.indexurls')),
     path('personal/', include('frontend.personalurls')),
+    path('forms/<str:formName>', formsUI, name='formUI'),
 ]

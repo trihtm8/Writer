@@ -1,0 +1,12 @@
+<h5>Your favorite tags:</h5>
+<div class='d-flex' style='overflow-x: auto; max-width: 500px'>
+{% for key, name in tags.items %}
+<button style="margin: 5px;">{{name}}</button>
+{% endfor %}
+</div>
+<h5>All genres:</h5>
+<div class='d-flex' style='overflow-x: auto; max-width: 500px'>
+{% for key, name in all.items %}
+<button style="margin: 5px;" {% if key in tags %}disabled{% endif %}>{{name}}</button>
+{% endfor %}
+</div>

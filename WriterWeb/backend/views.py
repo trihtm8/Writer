@@ -870,7 +870,7 @@ def newPost(request, key):
     return JsonResponse(Err.unsuportedMethod)
 
 ##################################################################################################################################################
-#route backend/{key}/favoritetag/{account_id}: v
+#route backend/{key}/favoritetag: v
 #GET:lấy các favorite tag
 #PUT:chọn favorite tag mới
 #POST:thay đổi thứ tự favorite tag
@@ -935,6 +935,13 @@ def favorite(request, key):
         resdata.update({'message':'Deleted favorite tag', 'name':favoriteGengre.genre.name})
         return JsonResponse(resdata)
     return JsonResponse(Err.unsuportedMethod())
+
+def allgenre(request, key):
+    tags = Genre.objects.all()
+    tags_json = {tag.id : tag.name for i,tag in enumerate(tags)}
+    resdata=Err.none()
+    resdata.update({'message':'Get all genre', 'tags': tags_json})
+    return JsonResponse(resdata)
 
 ##################################################################################################################################################
 #route backend/{key}/pinuniverse/{account_id}: v

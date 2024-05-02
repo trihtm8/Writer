@@ -1,11 +1,19 @@
 {% load static %}
     <button style="width: 100%;" class="my-shadow"><h3>+ New post</h3></button>
+    {% if posts.items|length == 0 %}
+    <div class="post no-post my-shadow text-center" style="border: solid 2px; border-color: black; height: 50px;">
+        <div style='margin: 5px'>
+            Add a favorite genre to see some posts!
+            <button onclick='showForm("favoritegenre")'><i class='fa-solid fa-plus'></i></button>
+        </div>
+    </div>
+    {% else %}
     {% for postid, content in posts.items %}
     <div class="post my-shadow" style="border: solid 2px; border-color: black; height: fit-content;">
         <div class="post-header">
             <h3 style='margin: 5px; display: flex;'>
                 <div class="circle-container">
-                    <img style='margin-top: -5px' src="{{ content.avartar }}" alt="Ảnh đại diện"></img>
+                    <img style='margin-top: -5px' src="{{ content.avartar }}">
                 </div>
                 <div>
                     {{ content.user_post }} introduced Chapter: <strong>{{ content.chapter_title }}</strong>
@@ -37,7 +45,7 @@
                 <a href="#">Report</a>
             </div>
             <div class="cover-img" style="border: solid 2px; border-color: black; height: fit-content;">
-                <img src="{{ content.universe_img }}" alt="Ảnh bìa chương" style="width: 100%; height: 200px;">
+                <img src="{{ content.universe_img }}" style="width: 100%; height: 200px;">
             </div>
             <div class="chapter-intro container" style="border: solid 2px; border-color: black; height: max-content;">
                 <h3>Universe: <strong>{{ content.universe_title }}</strong></h3>
@@ -57,4 +65,4 @@
             <button style="border-radius: 3px; margin-top: 5px; margin-bottom: 5px; margin-left: 80px;"><i class="fa-solid fa-share" style="color: black; font-size: 30px;"></i> {{ content.count_shared }}</button>
         </div>
     </div>
-    {% endfor %}
+    {% endfor %}{% endif %}

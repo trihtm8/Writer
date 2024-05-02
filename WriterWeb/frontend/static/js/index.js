@@ -275,3 +275,35 @@ function changeLink(link){
         targetElement.classList.add('now-link');
     }
 }
+
+async function showForm(formName) {
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken',document.querySelector('#csrf-subform input').value);
+    const response = await fetch(
+        '/forms/' + formName, 
+    );
+    
+    // Hiển thị phần tử che mờ và form đăng nhập
+    document.getElementById('overlay').style.display = 'flex';
+    document.getElementById('overlay').addEventListener('click', function () {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('formUI').style.display='none';
+    })
+
+    setTimeout(function() {
+        // Lấy kích thước của cửa sổ trình duyệt
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+
+        // Lấy kích thước của form đăng nhập
+        var formWidth = document.getElementById('formUI').offsetWidth;
+        var formHeight = document.getElementById('formUI').offsetHeight;
+
+        // Đặt vị trí của form đăng nhập ở giữa trang
+        document.getElementById('formUI').style.top = (windowHeight - formHeight) / 2 + 'px';
+        document.getElementById('formUI').style.left = (windowWidth - formWidth) / 2 + 'px';
+    }, 10);
+
+    document.getElementById('formUI').innerHTML= await response.text();
+    document.getElementById('formUI').style.display='block';
+}

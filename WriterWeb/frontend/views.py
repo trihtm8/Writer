@@ -81,6 +81,26 @@ def router(request, routename):
         return universes(request, key.key)
     return JsonResponse(Err.ortherErr('No route found'))
 
+#forms forms/{formName}
+def formsUI(request, formName):
+    if not request.user.is_authenticated:
+        return redirect(reverse('oops'))
+    if formName == 'favoritegenre':
+        return form_favorite_genre(request)
+############################################################################################################################################
+#forms routes
+
+def form_favorite_genre(request):
+    headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
+    cookies = request.COOKIES
+    key = Key.objects.get(user = request.user).key
+    response = requests.get('http://127.0.0.1:8000'+reverse('favoritetag', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    allresponse = requests.get('http://127.0.0.1:8000'+reverse('allgenre', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    return render(request, "forms/ui/favoriteTagsForm.html", {'tags' : response.json()['tags'], 'all' : allresponse.json()['tags']})
+
+
+############################################################################################################################################
+
 #route registerdone
 def registerdone(request):
     loginForm = LoginForm()
@@ -136,6 +156,9 @@ def indexmainroute(request, key):
     headers={key: value for key, value in request.META.items() if key.startswith('HTTP_')}
     cookies = request.COOKIES
     response = requests.get('http://127.0.0.1:8000'+reverse('see_posts', kwargs={'key' : key}), headers=headers, cookies=cookies)
+    if response.json()['err']:
+        if response.json()['detail']['message'] == 'Add a favorite tag to see some posts':
+            return render(request, 'html/subtemplate_router.html', {'route': 'index/main', 'posts' : {}})
     posts = response.json()['post_by_ftag']
     posts.update(response.json()['post_by_contact'])
     return render(request, 'html/subtemplate_router.html', {'route': 'index/main', 'posts' : posts})

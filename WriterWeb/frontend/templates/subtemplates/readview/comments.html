@@ -9,7 +9,7 @@
 <div id="comments-list" class='my-shadow'>
     {% for key, comment in comments.items %}
     <div class="comments-blog" >
-        <div class="circle-container"><img src="{{ comment.reader_img}}" alt="Anhr đại diện"></div>
+        <div class="circle-container"><img src="{{ comment.reader_img}}"></div>
         <div class="comment-content">
             <p><strong>{{ comment.reader }}</strong> <span class='text-muted'>{{ comment.created_at }}</span></p>
             <p>{{ comment.comment }}
@@ -19,7 +19,7 @@
     {% endfor %}
 </div>
 <div id="your-comment">
-    <div class="circle-container my-shadow"><img src="{% static "img/Logo.png" %}" alt="Anhr đại diện"></div>
+    <div class="circle-container my-shadow"><img src="{% static "img/Logo.png" %}"></div>
     <input class="my-shadow" type="text">
     <button class="my-shadow" style='width: 40px; height: 40px; margin-top: 0px'><i class="fa-regular fa-paper-plane"></i></button>
 </div>
